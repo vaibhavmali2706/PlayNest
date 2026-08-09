@@ -1,90 +1,97 @@
-# PlayNest 🟢
+# 🎯 PlayNest
 
-**Book. Play. Repeat.**
+### Sports Turf Booking & Management Platform
 
-An online sports turf booking platform — discover turfs, check live
-availability, book a slot, verify by email OTP, and get a downloadable
-digital PlayPass. Built with Flask, no payment gateway, database-ready
-mock data layer.
+PlayNest is a modern web-based sports turf booking platform designed to make
+finding, booking, and managing sports facilities simple and reliable.
 
-## Quick start
+Users can discover nearby turfs, check real-time slot availability, make
+bookings, manage their bookings, and receive booking confirmations.
 
-```bash
-cd PlayNest
-python3 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+Turf owners get a dedicated management dashboard where they can manage their
+turfs, bookings, availability, offline bookings, and customers.
 
-cp .env.example .env            # optional — see "Email" below
-python3 app.py
-```
+---
 
-Visit **http://localhost:5000**.
+## 🚀 Project Overview
 
-## Email — dev mode by default
+Traditional turf booking often depends on phone calls, WhatsApp messages,
+or manual registers. This can lead to:
 
-PlayNest needs no SMTP setup to run. If `MAIL_USERNAME` /
-`MAIL_PASSWORD` aren't set in `.env`, every OTP and transactional email
-is logged to the console instead of sent, **and the OTP is also shown
-in a flash banner in the UI** so you can complete the login flow
-end-to-end with zero configuration. Fill in real SMTP credentials in
-`.env` to send real email — no code changes required.
+- Double bookings
+- Difficulty checking slot availability
+- Manual booking management
+- Poor visibility for turf owners
+- Difficulty managing offline bookings
+- Lack of centralized booking records
 
-## Demo logins
+PlayNest provides a centralized platform that connects customers and turf
+owners through a single booking system.
 
-- **Player**: any email → OTP is shown on screen in dev mode.
-- **Owner portal** (`/owner/login`): pick any seeded owner from the dropdown — this is a demo account switcher, since the platform has no owner database yet.
-- **Admin panel** (`/admin/login`): passcode `playnest-admin`.
+---
 
-## Architecture
+## ✨ Key Features
 
-```
-app.py                 Application factory, blueprint + error registration
-config.py               Environment-driven configuration
+### 👤 Customer
 
-routes/                 Blueprints (thin — validation + orchestration only)
-  main.py                 Landing, about, contact
-  auth.py                 Email OTP login/registration
-  turfs.py                Search, filters, turf detail, favourites
-  booking.py               Slot picker, booking creation, PlayPass, cancellation
-  dashboard.py              Player dashboard (bookings, favourites, profile)
-  owner.py                  Owner portal (manage turfs/bookings, analytics)
-  admin.py                   Admin panel (users, turfs, bookings, reports)
+- User registration and login
+- Secure authentication
+- Turf discovery
+- Search and filtering
+- View turf details
+- View available sports
+- Check available time slots
+- Online turf booking
+- Booking confirmation
+- Booking history
+- Booking cancellation
+- Cancellation policy enforcement
+- Favourite turfs
+- Notifications
+- Profile management
+- Customer complaints
+- Customer restrictions/blacklisting handling
 
-services/                Business logic + the mock "database"
-  mock_data.py              Seed data for turfs/sports/cities (swap for real DB)
-  turf_service.py            Turf search/filter/detail
-  user_service.py             User repository (in-memory, keyed by email)
-  booking_service.py           Slot availability engine + booking lifecycle
-  otp_service.py                OTP generation/validation/throttling
-  email_service.py               Flask-Mail wrapper with dev-mode fallback
+---
 
-models/                  Plain dataclasses (User, Turf, Booking) — ORM-ready
-utils/                   Decorators, formatting helpers, PlayPass PDF generator
-templates/                Jinja2 templates, organised to mirror routes/
-static/                   CSS design system + vanilla JS (no build step)
-```
+### 🏟️ Turf Owner
 
-### Why mock data instead of a database?
+- Turf owner registration
+- Owner authentication
+- Owner dashboard
+- Add and manage turfs
+- Edit turf information
+- Manage turf images
+- Manage sports and facilities
+- View bookings
+- View booking details
+- Manage availability
+- Manage slots
+- Mark slots as unavailable for offline bookings
+- Track offline bookings
+- View customer information
+- Report problematic customers
+- Restrict/blacklist customers when required
+- View turf analytics
+- Manage complaints
 
-Every service function (`get_turf_by_id`, `create_booking`,
-`get_bookings_by_user`, ...) is written the way a repository-backed
-version would be. Swapping `services/mock_data.py`'s in-memory lists
-for real SQLAlchemy models — and pointing `config.py`'s
-`DATABASE_READY` flag at a real connection — is the only work needed
-to go live. Routes and templates don't need to change.
+---
 
-### Design system
+## 🔒 Offline Booking & Slot Management
 
-Dark, premium, sports-tech palette (charcoal/navy base, emerald +
-neon-green + electric-blue accents). The PlayPass ticket — with its
-dashed perforation and rounded notches — is the signature visual
-motif, echoed in section dividers and the booking summary panel
-throughout the product.
+One of PlayNest's important real-world features is handling offline bookings.
 
-## What's intentionally stubbed
+For example:
 
-- **Payments**: out of scope by design — all bookings are instantly "Confirmed".
-- **Real database**: mock repositories reset on server restart (in-memory).
-- **Owner/turf editing, image upload**: UI is scaffolded, actions are disabled with a tooltip pending DB integration.
-- **Push/browser notifications**: dashboard shows an in-app notification feed derived from booking activity; browser push is not wired up.
+A customer books a slot directly at the turf or through a phone/WhatsApp
+conversation.
+
+The turf owner can mark that particular slot as unavailable in PlayNest.
+
+### Example
+
+```text
+6:00 - 7:00 PM    Available
+7:00 - 8:00 PM    Available
+8:00 - 9:00 PM    Unavailable
+9:00 - 10:00 PM   Available
