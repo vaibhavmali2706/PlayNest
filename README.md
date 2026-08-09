@@ -34,7 +34,7 @@ end-to-end with zero configuration. Fill in real SMTP credentials in
 
 - **Player**: any email → OTP is shown on screen in dev mode.
 - **Owner portal** (`/owner/login`): pick any seeded owner from the dropdown — this is a demo account switcher, since the platform has no owner database yet.
-- **Admin panel** (`/admin/login`): passcode `playnest-admin`.
+- **Admin panel** (`/admin/login`): passcode `270607`.
 
 ## Architecture
 

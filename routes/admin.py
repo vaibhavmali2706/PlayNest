@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, flash, request
+from flask import Blueprint, render_template, session, redirect, url_for, flash, request, current_app
 
 from extensions import db
 from services import turf_service, booking_service, user_service, owner_service, email_service
@@ -7,7 +7,7 @@ from utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-ADMIN_PASSCODE = "playnest-admin"  # demo passcode
+ADMIN_PASSCODE = "270607"
 
 
 @admin_bp.route("/login", methods=["GET", "POST"])
@@ -15,9 +15,11 @@ def login():
     if session.get("is_admin"):
         return redirect(url_for("admin.dashboard"))
 
+    passcode = current_app.config.get("ADMIN_PASSCODE", ADMIN_PASSCODE)
+
     if request.method == "POST":
         code = request.form.get("passcode", "")
-        if code == ADMIN_PASSCODE:
+        if code == passcode:
             session["is_admin"] = True
             flash("Welcome to the PlayNest control room.", "success")
             return redirect(url_for("admin.dashboard"))

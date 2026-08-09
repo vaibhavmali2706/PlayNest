@@ -43,6 +43,9 @@ class Config:
     OTP_MAX_ATTEMPTS = 5
     OTP_RESEND_SECONDS = 30
 
+    # ---- Admin policy ----
+    ADMIN_PASSCODE = os.environ.get("ADMIN_PASSCODE", "270607")
+
     # ---- Booking policy ----
     CANCELLATION_WINDOW_HOURS = 3
 
