@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Sign In — PlayNest{% endblock %}
+{% block content %}
+<section class="auth-shell d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 6rem 1.5rem 3rem 1.5rem; background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);">
+  <div class="container" style="max-width: 480px;">
+    
+    <!-- User Login Card -->
+    <div class="glass p-4 p-md-5 hover-lift" data-aos="zoom-in" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+      <a href="{{ url_for('main.landing') }}" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 mb-4 hover-emerald" style="transition: color 0.2s;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+      </a>
+      <div class="text-center mb-5">
+        <a href="{{ url_for('main.landing') }}" class="d-inline-block mb-3">
+          <span style="font-size: 2.2rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.3));">🟢</span>
+        </a>
+        <h3 class="fw-bold mb-1">Sign In to PlayNest</h3>
+        <p class="text-gray small">Book your slot. Gather your team. Play.</p>
+      </div>
+
+      <form method="POST" novalidate class="needs-validation">
+        {{ form.hidden_tag() }}
+
+        <!-- Email Field -->
+        <div class="form-group mb-4 position-relative">
+          <label for="email" class="pn-label">Email Address</label>
+          {{ form.email(class="pn-input" + (" is-invalid" if form.email.errors else ""), placeholder="name@example.com", autofocus=true) }}
+          {% if form.email.errors %}
+            {% for err in form.email.errors %}
+              <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label for="password" class="pn-label mb-0">Password</label>
+            <a href="{{ url_for('auth.forgot_password') }}" class="text-emerald small" style="font-size: 0.8rem; transition: color 0.2s;">Forgot Password?</a>
+          </div>
+          <div class="position-relative">
+            {{ form.password(class="pn-input" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••", style="padding-right: 3rem;") }}
+            <button type="button" class="btn-toggle-password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--pn-gray); cursor: pointer; padding: 0.25rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 10;" tabindex="-1">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          {% if form.password.errors %}
+            {% for err in form.password.errors %}
+              <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="form-check mb-4 d-flex align-items-center gap-2">
+          {{ form.remember_me(class="form-check-input pn-checkbox", style="cursor: pointer; background-color: rgba(255,255,255,0.05); border: 1.5px solid var(--pn-border); width: 1.1rem; height: 1.1rem; border-radius: 4px;") }}
+          <label class="form-check-label text-gray small" for="remember_me" style="cursor: pointer; user-select: none;">Remember Me</label>
+        </div>
+
+        <input type="hidden" name="next" value="{{ next_url }}">
+        
+        <button type="submit" class="btn btn-pn-primary btn-block py-3 w-100 fs-6 justify-content-center">
+          Sign In <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+        </button>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="text-gray small mb-0">
+          Don't have an account? 
+          <a href="{{ url_for('auth.signup') }}" class="text-emerald fw-semibold">Create Account</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Turf Owner Banner Block -->
+    <div class="glass mt-4 p-4 text-center overflow-hidden position-relative hover-lift" data-aos="fade-up" data-aos-delay="100" style="border-radius: var(--radius-md); border-color: rgba(16, 185, 129, 0.25); background: linear-gradient(135deg, rgba(16, 27, 45, 0.8) 0%, rgba(22, 35, 58, 0.8) 100%);">
+      <div class="position-absolute top-0 end-0 p-3 opacity-10" style="font-size: 4rem; color: var(--pn-emerald);">
+        <i class="fa-solid fa-handshake"></i>
+      </div>
+      <p class="eyebrow mb-1">Own a Turf?</p>
+      <h5 class="fw-bold mb-3">Become a PlayNest Partner</h5>
+      <a href="{{ url_for('owner.login') }}" class="btn btn-block py-3 justify-content-center text-decoration-none" style="background: linear-gradient(135deg, var(--pn-blue) 0%, var(--pn-emerald) 100%); color: var(--pn-white); border-radius: 999px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35); font-size: 1.05rem; transition: all 0.3s ease;">
+        Turf Owner Partner Portal <i class="fa-solid fa-circle-chevron-right ms-2"></i>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .pn-checkbox:checked {
+    background-color: var(--pn-emerald) !important;
+    border-color: var(--pn-emerald) !important;
+  }
+  .pn-checkbox:focus {
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25) !important;
+    border-color: var(--pn-emerald) !important;
+  }
+</style>
+{% endblock %}

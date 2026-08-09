@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong | PlayNest{% endblock %}
+{% block content %}
+<section class="error-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 text-center" data-aos="zoom-in">
+        <p class="eyebrow mb-3"><i class="fa-solid fa-triangle-exclamation"></i> Technical foul</p>
+        <div class="error-code gradient-text mb-2">500</div>
+        <h2 class="mb-3">Something went wrong on our end.</h2>
+        <p class="text-gray mb-5">Our team has been notified. Please try again in a moment.</p>
+        <a href="{{ url_for('main.landing') }}" class="btn btn-pn-primary"><i class="fa-solid fa-house"></i> Back to Home</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

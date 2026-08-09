@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Manage Turfs — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-1">Listings</p>
+        <h2>Manage Turfs</h2>
+      </div>
+      <a href="{{ url_for('owner.add_turf') }}" class="btn btn-pn-primary"><i class="fa-solid fa-plus"></i> Add Turf</a>
+    </div>
+
+    {% if turfs %}
+    <div class="row g-4">
+      {% for turf in turfs %}
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 60 }}">
+        <div class="surface-navy p-3 hover-lift" style="border-radius: var(--radius-md);">
+          <div class="d-flex gap-3">
+            <img src="{{ turf.hero_image }}" style="width:110px;height:90px;object-fit:cover;border-radius:12px;" alt="{{ turf.name }}">
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between">
+                <h6 class="mb-1">{{ turf.name }}</h6>
+                <span class="badge-pill badge-confirmed">Active</span>
+              </div>
+              <p class="text-gray small mb-2">{{ turf.area }}, {{ turf.city }} · ₹{{ turf.price_per_hour }}/hr</p>
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('owner.edit_turf', turf_id=turf.id) }}" class="btn btn-pn-outline btn-sm">Edit</a>
+                <button class="btn btn-pn-ghost btn-sm" disabled title="Slot management module is locked in this iteration">Manage Slots</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center" data-aos="fade-up">
+      <i class="fa-solid fa-circle-play text-gray mb-3" style="font-size:2rem;"></i>
+      <h5>No active turfs listed</h5>
+      <p class="text-gray small mb-4">Click below to start listing your sports arena on the PlayNest network.</p>
+      <a href="{{ url_for('owner.add_turf') }}" class="btn btn-pn-primary">Add Your First Turf</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

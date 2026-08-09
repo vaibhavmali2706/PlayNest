@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Turfs — Admin{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Listings</p>
+      <h2>All Turfs</h2>
+    </div>
+
+    <div class="surface-navy p-0" style="overflow-x:auto;" data-aos="fade-up">
+      <table class="pn-table">
+        <thead><tr><th>Turf</th><th>City</th><th>Owner</th><th>Price/hr</th><th>Rating</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for t in turfs %}
+          <tr>
+            <td>{{ t.name }}</td>
+            <td>{{ t.city }}</td>
+            <td>{{ t.owner_name }}</td>
+            <td>₹{{ t.price_per_hour }}</td>
+            <td><i class="fa-solid fa-star text-warning"></i> {{ t.rating }}</td>
+            <td><span class="badge-pill badge-confirmed">{{ t.status|capitalize }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Owner Dashboard — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Overview</p>
+      <h2>Welcome back, {{ session.get('owner_name') }}</h2>
+    </div>
+
+    <div class="row g-3 mb-5">
+      {% for label, val, icon in [
+        ("My Turfs", stats.turfs, "fa-map-location-dot"),
+        ("Total Bookings", stats.bookings, "fa-ticket"),
+        ("Pending Approval", stats.pending, "fa-hourglass-half"),
+        ("Revenue", "₹" ~ stats.revenue, "fa-sack-dollar"),
+      ] %}
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 60 }}">
+        <div class="surface-navy stat-card hover-lift">
+          <div class="icon"><i class="fa-solid {{ icon }}"></i></div>
+          <div class="stat-number" style="font-size:1.6rem;">{{ val }}</div>
+          <div class="text-gray small">{{ label }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
+      <h5 class="mb-0">Recent bookings</h5>
+      <a href="{{ url_for('owner.bookings') }}" class="text-emerald small">View all <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    {% if bookings %}
+    <div class="surface-navy p-0" data-aos="fade-up" style="overflow-x:auto;">
+      <table class="pn-table">
+        <thead><tr><th>Booking ID</th><th>Turf</th><th>Player</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td class="text-mono"><a href="{{ url_for('owner.booking_details', booking_id=b.id) }}" class="text-emerald hover-underline fw-semibold">{{ b.id }}</a></td>
+            <td>{{ b.turf_name }}</td>
+            <td>{{ b.player_name }}</td>
+            <td>{{ b.date }} · {{ b.start_time }}</td>
+            <td><span class="badge-pill {{ b.status|status_badge }}">{{ b.status }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center"><p class="text-gray mb-0">No bookings yet for your turfs.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

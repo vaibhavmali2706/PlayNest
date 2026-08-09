@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Favourite Turfs — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/dashboard_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Saved</p>
+      <h2>Favourite Turfs</h2>
+    </div>
+
+    {% if turfs %}
+    <div class="row g-4">
+      {% for turf in turfs %}
+      <div class="col-md-6 col-xl-4">
+        {% include "components/turf_card.html" %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center" data-aos="fade-up">
+      <i class="fa-regular fa-heart text-gray mb-3" style="font-size:2rem;"></i>
+      <h5>No favourites yet</h5>
+      <p class="text-gray small mb-3">Tap the heart icon on any turf to save it here.</p>
+      <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-primary btn-sm">Browse Turfs</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

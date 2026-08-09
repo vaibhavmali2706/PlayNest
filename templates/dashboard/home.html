@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/dashboard_sidebar.html" %}
+
+  <div class="pn-main">
+    
+    <!-- Welcome Header -->
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-1">Welcome Back</p>
+        <h2 class="fw-bold mb-1">{{ greeting }}, {{ user.name.split(' ')[0] }} 👋</h2>
+        <p class="text-gray mb-0">Ready for your next game?</p>
+      </div>
+      <div>
+        <span class="badge-pill badge-confirmed fs-6 px-3 py-2">
+          <i class="fa-solid fa-location-dot me-1"></i> {{ user.city }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="row g-3 mb-5">
+      {% for label, val, icon in [
+        ("Total Bookings", stats.total_bookings, "fa-ticket"),
+        ("Upcoming", stats.upcoming, "fa-calendar-days"),
+        ("Completed", stats.completed, "fa-circle-check"),
+        ("Favourites", stats.favourites, "fa-heart"),
+      ] %}
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+        <div class="surface-navy stat-card hover-lift p-4 d-flex align-items-center gap-3" style="border-radius: var(--radius-md);">
+          <div class="d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--pn-emerald);">
+            <i class="fa-solid {{ icon }} fs-5"></i>
+          </div>
+          <div>
+            <div class="stat-number fw-bold fs-4" style="line-height: 1.1;">{{ val }}</div>
+            <div class="text-gray small" style="font-size: 0.8rem;">{{ label }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- POPULAR SPORTS SECTION -->
+    <div class="mb-5" data-aos="fade-up">
+      <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-gamepad text-emerald"></i> Popular Sports
+      </h5>
+      <div class="d-flex gap-3 overflow-x-auto pb-2 scroll-container">
+        {% for sport in sports %}
+        <a href="{{ url_for('turfs.listing', sport=sport.name) }}" class="glass d-flex align-items-center gap-3 px-4 py-3 hover-lift text-decoration-none flex-shrink-0" style="border-radius: var(--radius-sm); border-left: 4px solid {{ sport.color }}; min-width: 170px;">
+          <div class="fs-4" style="color: {{ sport.color }};"><i class="fa-solid {{ sport.icon }}"></i></div>
+          <div>
+            <div class="fw-semibold small" style="color: var(--pn-white);">{{ sport.name }}</div>
+            <div class="text-gray" style="font-size: 0.7rem;">Book Arena</div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- NEARBY TURFS SECTION -->
+    <div class="mb-5" data-aos="fade-up">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-map-location-dot text-emerald"></i> Nearby Turfs
+        </h5>
+        {% if not location_permission %}
+          <span class="text-gray small"><i class="fa-solid fa-circle-info me-1"></i> Fallback to registered city</span>
+        {% else %}
+          <span class="text-emerald small"><i class="fa-solid fa-circle-check me-1"></i> Using live location</span>
+        {% endif %}
+      </div>
+      <div class="row g-4">
+        {% for turf in nearby_turfs %}
+        <div class="col-md-6 col-lg-4">
+          <div class="glass overflow-hidden hover-lift h-100" style="border-radius: var(--radius-md);">
+            <div class="position-relative">
+              <img src="{{ turf.hero_image }}" style="width:100%; height:160px; object-fit:cover;" alt="{{ turf.name }}">
+              <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-dark bg-opacity-75 text-white py-1 px-2 text-mono" style="font-size:0.7rem; border-radius:5px;">
+                  <i class="fa-solid fa-location-dot text-emerald me-1"></i> {{ distances[turf.id] }}
+                </span>
+              </div>
+            </div>
+            <div class="p-3">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 75%;">{{ turf.name }}</h6>
+                <div class="text-warning small text-nowrap">
+                  <i class="fa-solid fa-star"></i> {{ turf.rating }}
+                </div>
+              </div>
+              <p class="text-gray small mb-3 text-truncate"><i class="fa-solid fa-circle-play text-emerald me-1"></i>{{ turf.sports | join(', ') }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-bold text-white small">₹{{ turf.price_per_hour }}<span class="text-gray fw-normal">/hr</span></div>
+                <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="btn btn-pn-primary btn-sm py-1 px-3">Book <i class="fa-solid fa-angle-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RECOMMENDED & FEATURED GRID -->
+    <div class="row g-4 mb-5">
+      <!-- Recommendations Section -->
+      <div class="col-lg-6" data-aos="fade-up">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-thumbs-up text-emerald"></i> Recommended For You
+        </h5>
+        <div class="d-flex flex-column gap-3">
+          {% for turf in recommendations %}
+          <div class="glass p-3 hover-lift d-flex align-items-center gap-3" style="border-radius: var(--radius-md);">
+            <img src="{{ turf.hero_image }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm);" alt="{{ turf.name }}">
+            <div class="flex-grow-1 min-w-0">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="fw-bold mb-1 text-truncate" style="font-size: 0.95rem;">{{ turf.name }}</h6>
+                <span class="text-warning small text-nowrap"><i class="fa-solid fa-star"></i> {{ turf.rating }}</span>
+              </div>
+              <p class="text-gray small mb-2 text-truncate" style="font-size: 0.75rem;">{{ turf.sports | join(', ') }} · {{ turf.area }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-semibold text-white small">₹{{ turf.price_per_hour }}/hr</div>
+                <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="text-emerald small text-decoration-none fw-semibold">Reserve <i class="fa-solid fa-angle-right"></i></a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Featured Turfs Section -->
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-crown text-emerald"></i> Featured Arenas
+        </h5>
+        <div class="d-flex flex-column gap-3">
+          {% for turf in featured_turfs %}
+          <div class="glass p-3 hover-lift d-flex align-items-center gap-3" style="border-radius: var(--radius-md);">
+            <img src="{{ turf.hero_image }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm);" alt="{{ turf.name }}">
+            <div class="flex-grow-1 min-w-0">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="fw-bold mb-1 text-truncate" style="font-size: 0.95rem;">{{ turf.name }}</h6>
+                <span class="text-warning small text-nowrap"><i class="fa-solid fa-star"></i> {{ turf.rating }}</span>
+              </div>
+              <p class="text-gray small mb-2 text-truncate" style="font-size: 0.75rem;">{{ turf.sports | join(', ') }} · {{ turf.area }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-semibold text-white small">₹{{ turf.price_per_hour }}/hr</div>
+                <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="text-emerald small text-decoration-none fw-semibold">Reserve <i class="fa-solid fa-angle-right"></i></a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- TRENDING & HIGHEST RATED HORIZONTAL CAROUSELS -->
+    <div class="mb-5" data-aos="fade-up">
+      <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-fire text-emerald"></i> Trending in {{ user.city }}
+      </h5>
+      <div class="d-flex gap-4 overflow-x-auto pb-2 scroll-container">
+        {% for turf in trending_turfs %}
+        <div class="glass overflow-hidden hover-lift flex-shrink-0" style="border-radius: var(--radius-md); width: 260px;">
+          <img src="{{ turf.hero_image }}" style="width: 100%; height: 130px; object-fit: cover;" alt="{{ turf.name }}">
+          <div class="p-3">
+            <h6 class="fw-bold mb-1 text-truncate">{{ turf.name }}</h6>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="text-gray small" style="font-size:0.75rem;"><i class="fa-solid fa-users me-1"></i>{{ turf.review_count }} reviews</span>
+              <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="text-emerald small fw-semibold text-decoration-none">Details <i class="fa-solid fa-arrow-right fs-6"></i></a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mb-5" data-aos="fade-up">
+      <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-award text-emerald"></i> Highest Rated
+      </h5>
+      <div class="d-flex gap-4 overflow-x-auto pb-2 scroll-container">
+        {% for turf in highest_rated %}
+        <div class="glass overflow-hidden hover-lift flex-shrink-0" style="border-radius: var(--radius-md); width: 260px;">
+          <img src="{{ turf.hero_image }}" style="width: 100%; height: 130px; object-fit: cover;" alt="{{ turf.name }}">
+          <div class="p-3">
+            <h6 class="fw-bold mb-1 text-truncate">{{ turf.name }}</h6>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="text-warning small" style="font-size:0.75rem;"><i class="fa-solid fa-star me-1"></i>{{ turf.rating }} Rating</span>
+              <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="text-emerald small fw-semibold text-decoration-none">Details <i class="fa-solid fa-arrow-right fs-6"></i></a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RECENTLY ADDED SECTION -->
+    <div class="mb-5" data-aos="fade-up">
+      <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="fa-regular fa-clock text-emerald"></i> Recently Added Arenas
+      </h5>
+      <div class="row g-4">
+        {% for turf in recently_added %}
+        <div class="col-md-6 col-lg-3">
+          <div class="glass overflow-hidden hover-lift h-100" style="border-radius: var(--radius-md);">
+            <img src="{{ turf.hero_image }}" style="width: 100%; height: 120px; object-fit: cover;" alt="{{ turf.name }}">
+            <div class="p-3">
+              <h6 class="fw-bold mb-1 text-truncate" style="font-size:0.9rem;">{{ turf.name }}</h6>
+              <p class="text-gray small mb-2 text-truncate" style="font-size:0.75rem;">{{ turf.area }}, {{ turf.city }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-emerald fw-bold" style="font-size:0.8rem;">New on PlayNest</span>
+                <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="text-white small text-decoration-none"><i class="fa-solid fa-circle-chevron-right fs-5"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Smart Location Prompt -->
+{% if not location_permission %}
+<div id="locationPrompt" class="glass p-4 position-fixed bottom-0 end-0 m-4 hover-lift" style="z-index: 9999; max-width: 400px; border-radius: var(--radius-md); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+  <div class="d-flex align-items-start gap-3">
+    <div class="d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--pn-emerald); flex-shrink: 0;">
+      <i class="fa-solid fa-location-dot" style="font-size: 1.25rem;"></i>
+    </div>
+    <div>
+      <h6 class="fw-bold mb-1">Allow PlayNest to access your location?</h6>
+      <p class="text-gray small mb-3">We'll show you the nearest sports turfs and calculate travel distances automatically.</p>
+      <div class="d-flex gap-2">
+        <button id="allowLocationBtn" class="btn btn-pn-primary btn-sm py-2 px-3">Allow</button>
+        <button id="denyLocationBtn" class="btn btn-pn-outline btn-sm py-2 px-3">Not Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<style>
+  .scroll-container::-webkit-scrollbar {
+    height: 6px;
+  }
+  .scroll-container::-webkit-scrollbar-thumb {
+    background: var(--pn-navy-soft);
+    border-radius: 99px;
+  }
+  .scroll-container::-webkit-scrollbar-thumb:hover {
+    background: var(--pn-emerald);
+  }
+  .stat-card {
+    border: 1px solid var(--pn-border);
+    transition: transform 0.25s ease;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const allowBtn = document.getElementById("allowLocationBtn");
+    const denyBtn = document.getElementById("denyLocationBtn");
+    const prompt = document.getElementById("locationPrompt");
+
+    if (allowBtn && denyBtn && prompt) {
+      allowBtn.addEventListener("click", function() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+              fetch("{{ url_for('dashboard.update_location') }}", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Requested-With": "XMLHttpRequest"
+                },
+                body: JSON.stringify({
+                  permission: "allowed",
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  prompt.style.display = "none";
+                  window.location.reload();
+                }
+              });
+            },
+            function(error) {
+              console.error("Geolocation error:", error);
+              fetch("{{ url_for('dashboard.update_location') }}", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Requested-With": "XMLHttpRequest"
+                },
+                body: JSON.stringify({ permission: "denied" })
+              })
+              .then(() => {
+                prompt.style.display = "none";
+                window.location.reload();
+              });
+            }
+          );
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      });
+
+      denyBtn.addEventListener("click", function() {
+        fetch("{{ url_for('dashboard.update_location') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify({ permission: "denied" })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            prompt.style.display = "none";
+            window.location.reload();
+          }
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

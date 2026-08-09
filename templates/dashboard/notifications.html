@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Notifications — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/dashboard_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Activity</p>
+      <h2>Notifications</h2>
+    </div>
+
+    {% if feed %}
+    <div class="d-flex flex-column gap-3">
+      {% for n in feed %}
+      <div class="surface-navy p-3 d-flex align-items-center gap-3" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 30 }}">
+        <div class="d-flex align-items-center justify-content-center" style="width:40px;height:40px;border-radius:12px;background:rgba(16,185,129,0.1);color:var(--pn-emerald);">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold small">{{ n.title }}</div>
+          <div class="text-gray" style="font-size:0.8rem;">{{ n.message }}</div>
+        </div>
+        <span class="badge-pill {{ n.status|status_badge }}">{{ n.status }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center" data-aos="fade-up">
+      <i class="fa-regular fa-bell text-gray mb-3" style="font-size:2rem;"></i>
+      <h5>You're all caught up</h5>
+      <p class="text-gray small mb-0">Booking updates will show up here.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

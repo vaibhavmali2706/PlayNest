@@ -1,0 +1,37 @@
+<nav class="pn-navbar">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a href="{{ url_for('main.landing') }}" class="navbar-brand">
+      <i class="fa-solid fa-circle-play text-emerald"></i>
+      PlayNest<span class="dot">.</span>
+    </a>
+
+    <button class="pn-nav-toggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+
+    <div class="pn-nav-menu d-flex align-items-center gap-1">
+      <a href="{{ url_for('main.landing') }}" class="pn-nav-link {% if request.path == '/' %}active{% endif %}">Home</a>
+      <a href="{{ url_for('main.landing') }}#why-playnest" class="pn-nav-link">Features</a>
+      <a href="{{ url_for('turfs.listing') }}" class="pn-nav-link {% if request.path.startswith('/turfs') %}active{% endif %}">Sports</a>
+      <a href="{{ url_for('main.about') }}" class="pn-nav-link {% if request.path == '/about' %}active{% endif %}">About</a>
+      <a href="{{ url_for('main.contact') }}" class="pn-nav-link {% if request.path == '/contact' %}active{% endif %}">Contact</a>
+
+      {% if is_owner_logged_in %}
+        <a href="{{ url_for('owner.dashboard') }}" class="pn-nav-link {% if request.path.startswith('/owner') %}active{% endif %}">
+          <i class="fa-solid fa-briefcase text-emerald me-1"></i> {{ current_owner_name.split(' ')[0] if current_owner_name else 'Partner' }}
+        </a>
+        <a href="{{ url_for('owner.logout') }}" class="btn btn-pn-ghost btn-sm ms-lg-2">Logout</a>
+      {% elif is_admin_logged_in %}
+        <a href="{{ url_for('admin.dashboard') }}" class="pn-nav-link {% if request.path.startswith('/admin') %}active{% endif %}">
+          <i class="fa-solid fa-shield-halved text-emerald me-1"></i> Admin
+        </a>
+        <a href="{{ url_for('admin.logout') }}" class="btn btn-pn-ghost btn-sm ms-lg-2">Logout</a>
+      {% elif is_logged_in %}
+        <a href="{{ url_for('dashboard.home') }}" class="pn-nav-link {% if request.path.startswith('/dashboard') %}active{% endif %}">
+          <i class="fa-regular fa-user"></i> {{ current_user_name.split(' ')[0] if current_user_name else 'Dashboard' }}
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-pn-ghost btn-sm ms-lg-2">Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-pn-primary btn-sm ms-lg-2">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

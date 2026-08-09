@@ -1,0 +1,20 @@
+<aside class="pn-sidebar">
+  <div class="d-flex align-items-center gap-3 mb-4 px-2">
+    <div class="d-flex align-items-center justify-content-center" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#10B981,#39FF88);color:#0B0F0E;font-weight:700;">
+      {{ session.get('user_name','P')[0]|upper }}
+    </div>
+    <div>
+      <div class="fw-semibold small">{{ session.get('user_name','Player') }}</div>
+      <div class="text-gray" style="font-size:0.75rem;">Player Dashboard</div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('dashboard.home') }}" class="side-link {% if request.endpoint == 'dashboard.home' %}active{% endif %}"><i class="fa-solid fa-house"></i> Overview</a>
+  <a href="{{ url_for('dashboard.bookings') }}" class="side-link {% if request.endpoint == 'dashboard.bookings' %}active{% endif %}"><i class="fa-solid fa-ticket"></i> My Bookings</a>
+  <a href="{{ url_for('dashboard.favourites') }}" class="side-link {% if request.endpoint == 'dashboard.favourites' %}active{% endif %}"><i class="fa-solid fa-heart"></i> Favourite Turfs</a>
+  <a href="{{ url_for('dashboard.notifications') }}" class="side-link {% if request.endpoint == 'dashboard.notifications' %}active{% endif %}"><i class="fa-solid fa-bell"></i> Notifications</a>
+  <a href="{{ url_for('dashboard.profile') }}" class="side-link {% if request.endpoint == 'dashboard.profile' %}active{% endif %}"><i class="fa-regular fa-user"></i> Profile</a>
+  <hr class="divider-fade my-3">
+  <a href="{{ url_for('turfs.listing') }}" class="side-link"><i class="fa-solid fa-magnifying-glass"></i> Browse Turfs</a>
+  <a href="{{ url_for('auth.logout') }}" class="side-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</aside>

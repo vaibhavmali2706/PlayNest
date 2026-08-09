@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Offside — Page Not Found | PlayNest{% endblock %}
+{% block content %}
+<section class="error-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 text-center" data-aos="zoom-in">
+        <p class="eyebrow mb-3"><i class="fa-solid fa-flag"></i> Whistle blown</p>
+        <div class="error-code gradient-text mb-2">404</div>
+        <h2 class="mb-3">Offside! This page doesn't exist.</h2>
+        <p class="text-gray mb-5">The turf you're looking for might have moved, been renamed, or never existed. Let's get you back in the game.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="{{ url_for('main.landing') }}" class="btn btn-pn-primary"><i class="fa-solid fa-house"></i> Back to Home</a>
+          <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-outline"><i class="fa-solid fa-magnifying-glass"></i> Browse Turfs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

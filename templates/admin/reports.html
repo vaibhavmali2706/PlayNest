@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Reports — Admin{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Insights</p>
+      <h2>Reports</h2>
+    </div>
+
+    <div class="glass p-4 mb-4" data-aos="fade-up">
+      <h6 class="mb-3">City-wise performance</h6>
+      <div class="table-responsive">
+        <table class="pn-table">
+          <thead><tr><th>City</th><th>Turfs</th><th>Bookings</th><th>Revenue</th></tr></thead>
+          <tbody>
+          {% for city, d in by_city.items() %}
+            <tr><td>{{ city }}</td><td>{{ d.turfs }}</td><td>{{ d.bookings }}</td><td>₹{{ d.revenue }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="glass p-4" data-aos="fade-up">
+      <h6 class="mb-3">Sports on the platform</h6>
+      <div class="d-flex flex-wrap gap-2">
+        {% for s in sports %}
+        <span class="turf-tag"><i class="fa-solid {{ s.icon }}"></i> {{ s.name }}</span>
+        {% endfor %}
+      </div>
+      <p class="text-gray small mt-3 mb-0">Detailed analytics dashboards (funnels, cohort retention, owner payouts) are planned once the platform moves off mock data.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

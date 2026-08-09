@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}About — PlayNest{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:8rem;">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <p class="eyebrow mb-2">About us</p>
+      <h1 style="font-size:clamp(2rem,4vw,3rem);">We're building the easiest way to play.</h1>
+      <p class="text-gray mx-auto mt-3" style="max-width:640px;">PlayNest started with a simple frustration: finding and booking a good turf shouldn't take a dozen phone calls. So we built a platform where verified owners list real-time availability, and players book in seconds.</p>
+    </div>
+
+    <div class="row g-4 mt-4">
+      {% for icon, title, desc in [
+        ("fa-bullseye", "Our Mission", "Make every sport accessible within minutes, in every city we operate in."),
+        ("fa-handshake", "For Owners", "Give turf owners a professional storefront and zero-hassle booking management."),
+        ("fa-users", "For Players", "A fast, honest, beautifully designed way to find your next game."),
+      ] %}
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 80 }}">
+        <div class="surface-navy feature-card hover-lift h-100">
+          <div class="feature-icon"><i class="fa-solid {{ icon }}"></i></div>
+          <h5>{{ title }}</h5>
+          <p class="text-gray small mb-0">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

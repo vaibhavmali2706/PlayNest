@@ -1,0 +1,13 @@
+Flask==3.0.3
+Flask-Mail==0.9.1
+Flask-WTF==1.2.1
+python-dotenv==1.0.1
+WTForms==3.1.2
+reportlab==4.2.5
+email-validator>=2.0.0
+bcrypt==5.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.1.0
+pg8000==1.31.5
+
+

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Application Pending — PlayNest Partner{% endblock %}
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 6rem 1.5rem 3rem 1.5rem;">
+  <div class="glass p-5 text-center hover-lift" data-aos="zoom-in" style="max-width: 600px; border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+    
+    <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(251, 191, 36, 0.1); color: var(--pn-warning);">
+      <i class="fa-solid fa-hourglass-half fa-spin-pulse" style="font-size: 2.2rem;"></i>
+    </div>
+
+    <p class="eyebrow mb-1">Partner Verification</p>
+    <h3 class="fw-bold mb-2">Verification In Progress</h3>
+    <div class="mb-4">
+      <span class="badge-pill badge-pending px-3 py-2">
+        <i class="fa-solid fa-circle-notch fa-spin me-1"></i> PENDING APPROVAL
+      </span>
+    </div>
+
+    <div class="surface-navy p-4 mb-4 text-start" style="border-radius: var(--radius-md); border: 1px solid var(--pn-border);">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-gray small">Partner ID</span>
+        <strong class="text-mono text-emerald" style="letter-spacing: 0.05em;">{{ owner.id }}</strong>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-gray small">Turf Name</span>
+        <span class="fw-semibold text-white">{{ owner.turf_name }}</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-gray small">PAN Card</span>
+        <span class="text-mono text-white">{{ owner.pan }}</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-gray small">Business License</span>
+        <span class="text-mono text-white">{{ owner.business_license }}</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="text-gray small">Documents Uploaded</span>
+        <span class="text-emerald small"><i class="fa-solid fa-circle-check"></i> Identity & Images</span>
+      </div>
+    </div>
+
+    <p class="text-gray small mb-4">
+      Our compliance team is auditing your registration details and files. Verification is typically completed within 24 hours. You will receive an automated email confirmation once your account is active.
+    </p>
+
+    <div class="d-flex gap-3 justify-content-center">
+      <a href="{{ url_for('owner.logout') }}" class="btn btn-pn-danger py-2 px-4">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </a>
+      <a href="{{ url_for('main.landing') }}" class="btn btn-pn-outline py-2 px-4">
+        Go to Home
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

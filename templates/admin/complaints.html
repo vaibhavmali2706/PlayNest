@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Manage Complaints — PlayNest Control Room{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">compliance & operations</p>
+      <h2>Player Complaints ⚠️</h2>
+      <p class="text-gray small">Review user reports filed against turf partners. Take action, including warning owners or removing partner profiles.</p>
+    </div>
+
+    {% if complaints %}
+    <div class="row g-4">
+      {% for complaint in complaints %}
+      <div class="col-12" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 60 }}">
+        <div class="surface-navy p-4 hover-lift" style="border-radius: var(--radius-md); border-left: 4px solid #dc3545;">
+          <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+            <div>
+              <span class="badge-pill mb-2 d-inline-block bg-danger-subtle text-danger" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;">{{ complaint.status }}</span>
+              <h5 class="mb-1 text-white">{{ complaint.title }}</h5>
+              <p class="text-gray small mb-0">
+                Turf: <strong>{{ complaint.turf_name }}</strong> (ID: {{ complaint.turf_id }}) | 
+                Partner ID: <strong class="text-mono">{{ complaint.owner_id }}</strong>
+              </p>
+            </div>
+            <div class="text-end">
+              <div class="text-gray small mb-2">{{ complaint.created_at.strftime('%Y-%m-%d') }}</div>
+              
+              {% set warnings = owner_warnings.get(complaint.owner_id, 0) %}
+              <div class="mb-2">
+                <span class="badge-pill bg-dark text-gray small" style="border: 1px solid var(--pn-border); padding: 4px 10px;">
+                  Warnings: <strong class="{{ 'text-danger' if warnings >= 3 else 'text-warning' }}">{{ warnings }}/3</strong>
+                </span>
+              </div>
+
+              <div class="d-flex flex-column gap-2 align-items-end">
+                <!-- Warn Partner -->
+                <form method="POST" action="{{ url_for('admin.warn_partner', owner_id=complaint.owner_id) }}" class="d-inline">
+                  <button type="submit" class="btn btn-warning btn-sm text-dark py-1 px-3 fw-semibold w-100" style="font-size: 0.8rem;">
+                    <i class="fa-solid fa-bell me-1"></i> Send Warning
+                  </button>
+                </form>
+
+                <!-- Authority to Remove Partner in Case of Complaints -->
+                {% if warnings >= 3 %}
+                <form method="POST" action="{{ url_for('admin.remove_partner', owner_id=complaint.owner_id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently remove this partner and all their turfs? This action is irreversible.');">
+                  <button type="submit" class="btn btn-danger btn-sm text-white py-1 px-3 fw-semibold w-100" style="font-size: 0.8rem;">
+                    <i class="fa-solid fa-user-xmark me-1"></i> Remove Partner
+                  </button>
+                </form>
+                {% else %}
+                <button class="btn btn-pn-outline btn-sm py-1 px-3 fw-semibold w-100" style="font-size: 0.8rem; cursor: not-allowed; opacity: 0.5;" disabled title="Requires 3 warnings first">
+                  <i class="fa-solid fa-user-xmark me-1"></i> Locked ({{ warnings }}/3)
+                </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <hr class="divider-fade my-3">
+          <p class="text-gray mb-3" style="font-size: 0.9rem;">{{ complaint.description }}</p>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span class="text-gray small">Reported by Player: <strong>{{ complaint.user_name }}</strong> (ID: {{ complaint.user_id }})</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center" data-aos="fade-up">
+      <i class="fa-solid fa-circle-check text-emerald mb-3" style="font-size:2.5rem;"></i>
+      <h5>No active complaints</h5>
+      <p class="text-gray small mb-0">Everything is running smoothly! No player complaints have been filed.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block title %}Booking Details — {{ booking.id }} — Owner Portal{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <!-- Back to bookings -->
+    <div class="mb-4" data-aos="fade-up">
+      <a href="{{ url_for('owner.bookings') }}" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 hover-emerald" style="font-weight: 500;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Bookings
+      </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-1">Booking Info</p>
+        <h2>Booking details: <span class="text-mono text-emerald">{{ booking.id }}</span></h2>
+      </div>
+      <div>
+        <span class="badge-pill fs-6 py-2 px-3 {{ booking.status|status_badge }}">{{ booking.status }}</span>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Booking Details Card -->
+      <div class="col-lg-7" data-aos="fade-up">
+        <div class="surface-navy p-4 h-100" style="border-radius: var(--radius-md);">
+          <h4 class="mb-3 text-white border-bottom border-secondary pb-2">Booking Summary</h4>
+          
+          <div class="row g-3">
+            <div class="col-6">
+              <span class="pn-label">Turf Name</span>
+              <p class="fw-semibold mb-0">{{ booking.turf_name }}</p>
+              <p class="text-gray small">{{ booking.turf_area }}, {{ booking.turf_city }}</p>
+            </div>
+            
+            <div class="col-6">
+              <span class="pn-label">Sport booked</span>
+              <p class="fw-semibold mb-0"><i class="fa-solid fa-futbol text-emerald me-1"></i> {{ booking.sport }}</p>
+            </div>
+
+            <div class="col-6">
+              <span class="pn-label">Date</span>
+              <p class="fw-semibold mb-0"><i class="fa-regular fa-calendar-days text-primary me-1"></i> {{ booking.date|pretty_date }}</p>
+            </div>
+
+            <div class="col-6">
+              <span class="pn-label">Time & Duration</span>
+              <p class="fw-semibold mb-0"><i class="fa-regular fa-clock text-warning me-1"></i> {{ booking.start_time|time_12h }} - {{ booking.end_time|time_12h }}</p>
+              <p class="text-gray small">({{ booking.duration_hours }} hour{% if booking.duration_hours > 1 %}s{% endif %})</p>
+            </div>
+
+            <div class="col-12">
+              <div class="perforation my-3"></div>
+            </div>
+
+            <div class="col-6">
+              <span class="pn-label">Amount paid</span>
+              <h3 class="fw-bold mb-0 text-neon">₹{{ booking.price }}</h3>
+              <span class="text-gray-dim small">All taxes included</span>
+            </div>
+
+            <div class="col-6 d-flex align-items-end justify-content-end">
+              {% if booking.status == "Pending" %}
+                <div class="d-flex gap-2">
+                  <form method="POST" action="{{ url_for('owner.approve_booking', booking_id=booking.id) }}">
+                    <button class="btn btn-pn-primary btn-sm">Approve Booking</button>
+                  </form>
+                  <form method="POST" action="{{ url_for('owner.reject_booking', booking_id=booking.id) }}">
+                    <button class="btn btn-pn-danger btn-sm">Reject</button>
+                  </form>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Profile / Details Card -->
+      <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass p-4 h-100 d-flex flex-column justify-content-between" style="border-radius: var(--radius-md);">
+          <div>
+            <h4 class="mb-3 text-white border-bottom border-secondary pb-2">Customer Profile</h4>
+            
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="d-flex align-items-center justify-content-center" 
+                   style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--pn-blue), var(--pn-neon)); color: var(--pn-charcoal); font-weight: 700; font-size: 1.3rem;">
+                {{ customer.avatar_initials if customer else booking.player_name[0]|upper }}
+              </div>
+              <div>
+                <h5 class="mb-1 text-white">{{ booking.player_name }}</h5>
+                {% if customer %}
+                  <p class="text-gray small mb-0"><i class="fa-solid fa-location-dot me-1"></i> From {{ customer.city }}</p>
+                {% else %}
+                  <p class="text-gray small mb-0"><i class="fa-solid fa-circle-exclamation me-1"></i> Guest checkout</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <span class="pn-label">Email Address</span>
+              <p class="fw-semibold mb-0" style="word-break: break-all;">{{ customer.email if customer else 'Unavailable' }}</p>
+            </div>
+
+            <div class="mb-4">
+              <span class="pn-label">Phone Number</span>
+              <p class="fw-semibold mb-0">{{ customer.phone if customer else 'Unavailable' }}</p>
+            </div>
+            
+            {% if restriction %}
+              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-4" style="border-radius: var(--radius-sm); background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25);">
+                <i class="fa-solid fa-user-slash text-danger"></i>
+                <span class="small text-danger fw-semibold">This customer is restricted from booking your turf.</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            {% if customer %}
+              <a href="mailto:{{ customer.email }}?subject=Regarding your booking {{ booking.id }} at {{ booking.turf_name }}" 
+                 class="btn btn-pn-outline btn-block text-center justify-content-center">
+                <i class="fa-solid fa-envelope me-1"></i> Contact Customer
+              </a>
+              
+              {% if restriction %}
+                <!-- Unrestrict Action -->
+                <form method="POST" action="{{ url_for('owner.unrestrict_customer_route', booking_id=booking.id) }}">
+                  <button type="submit" class="btn btn-pn-primary btn-block justify-content-center" style="background: var(--pn-emerald); color: var(--pn-charcoal);">
+                    <i class="fa-solid fa-user-check me-1"></i> Remove Restriction
+                  </button>
+                </form>
+              {% else %}
+                <!-- Restrict Action -->
+                {% if booking.status == "Completed" %}
+                  <button type="button" class="btn btn-pn-danger btn-block justify-content-center" onclick="openRestrictModal()">
+                    <i class="fa-solid fa-user-slash me-1"></i> Restrict Customer
+                  </button>
+                {% else %}
+                  <button type="button" class="btn btn-pn-danger btn-block justify-content-center" disabled style="opacity: 0.5;">
+                    <i class="fa-solid fa-user-slash me-1"></i> Restrict Customer
+                  </button>
+                  <p class="text-gray-dim text-center small mt-1 mb-0" style="font-size:0.75rem;">
+                    * Available only after completed booking.
+                  </p>
+                {% endif %}
+              {% endif %}
+            {% else %}
+              <button class="btn btn-pn-outline btn-block" disabled>Guest Account Actions Unavailable</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prior Reports filed for this booking -->
+    {% if reports %}
+      <div class="glass p-4 mt-4" data-aos="fade-up">
+        <h5 class="text-white mb-3">Filed Reports against this Booking</h5>
+        <div class="d-flex flex-column gap-3">
+          {% for r in reports %}
+            <div class="surface-navy p-3" style="border-radius: var(--radius-sm); border-left: 3px solid var(--pn-danger);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge-pill bg-danger-subtle text-danger" style="font-size: 0.7rem;">
+                  {{ r.reason.replace('_', ' ').title() }}
+                </span>
+                <span class="text-gray small">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+              </div>
+              <p class="text-gray small mb-0">{{ r.description or 'No notes provided.' }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Restrict Customer Modal -->
+<div class="modal fade" id="restrictModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass text-white" style="border: 1px solid var(--pn-border); background: rgba(15, 23, 42, 0.95); border-radius: var(--radius-lg);">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold text-white mb-1">Restrict Customer</h5>
+          <p class="text-gray small mb-0">Player: {{ booking.player_name }}</p>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <form method="POST" action="{{ url_for('owner.report_and_restrict', booking_id=booking.id) }}">
+          
+          <label class="pn-label mb-2">Why are you restricting this customer?</label>
+          
+          <div class="d-flex flex-column gap-2 mb-3">
+            {% for value, label in [
+              ('rude_behaviour', 'Rude Behaviour'),
+              ('damaged_property', 'Damaged Property'),
+              ('repeated_late_arrival', 'Repeated Late Arrival'),
+              ('no_show', 'No Show'),
+              ('violated_turf_rules', 'Violated Turf Rules'),
+              ('other', 'Other')
+            ] %}
+              <label class="d-flex align-items-center gap-3 p-2 rounded hover-emerald" style="cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid var(--pn-border); transition: all 0.2s;">
+                <input type="radio" name="reason" value="{{ value }}" {% if loop.first %}checked{% endif %} style="accent-color: var(--pn-emerald); width: 18px; height: 18px;">
+                <span class="small fw-medium">{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="pn-label">Optional Notes</label>
+            <textarea class="pn-input" name="notes" rows="3" placeholder="Describe the incident (e.g. details of damage, rules violated)..." style="resize: none;"></textarea>
+          </div>
+
+          <!-- Restrict from my turf Yes / No -->
+          <div class="p-3 mb-4 rounded" style="background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.15);">
+            <label class="pn-label mb-2 fw-semibold text-white">Restrict from my turf?</label>
+            <div class="d-flex gap-4">
+              <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
+                <input type="radio" name="restrict" value="yes" checked style="accent-color: var(--pn-danger); width:18px; height:18px;">
+                <span class="small fw-medium text-danger">Yes, block future bookings</span>
+              </label>
+              <label class="d-flex align-items-center gap-2" style="cursor:pointer;">
+                <input type="radio" name="restrict" value="no" style="accent-color: var(--pn-gray); width:18px; height:18px;">
+                <span class="small fw-medium">No, file report only</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end border-top border-secondary pt-3">
+            <button type="button" class="btn btn-pn-outline btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-pn-primary btn-sm btn-pn-danger" style="background: rgba(248,113,113,0.22); border-color: rgba(248,113,113,0.4); color: var(--pn-danger);">Submit Action</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  let restrictModalInstance;
+  function openRestrictModal() {
+    if (!restrictModalInstance) {
+      restrictModalInstance = new bootstrap.Modal(document.getElementById('restrictModal'));
+    }
+    restrictModalInstance.show();
+  }
+</script>
+{% endblock %}
+{% endblock %}

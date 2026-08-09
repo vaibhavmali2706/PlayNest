@@ -1,0 +1,23 @@
+<div class="surface-navy turf-card hover-lift" data-aos="fade-up">
+  <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="turf-img-wrap d-block">
+    <img src="{{ turf.hero_image }}" alt="{{ turf.name }}" loading="lazy">
+    <span class="turf-rating-chip"><i class="fa-solid fa-star text-warning"></i> {{ turf.rating }}</span>
+    <button class="turf-fav-btn {% if turf.id in user_favourite_ids %}active{% endif %}" data-fav-btn="{{ turf.id }}" aria-label="Save to favourites">
+      <i class="fa-{{ 'solid' if turf.id in user_favourite_ids else 'regular' }} fa-heart {% if turf.id in user_favourite_ids %}text-danger{% endif %}"></i>
+    </button>
+  </a>
+  <div class="turf-body">
+    <div class="d-flex justify-content-between align-items-start">
+      <h5 class="mb-1">{{ turf.name }}</h5>
+      {% if turf.verified %}<i class="fa-solid fa-circle-check text-emerald" title="Verified turf owner"></i>{% endif %}
+    </div>
+    <p class="text-gray small mb-0"><i class="fa-solid fa-location-dot me-1"></i>{{ turf.area }}, {{ turf.city }}</p>
+    <div class="turf-tags">
+      {% for s in turf.sports[:3] %}<span class="turf-tag">{{ s }}</span>{% endfor %}
+    </div>
+    <div class="turf-footer">
+      <div class="turf-price">₹{{ turf.price_per_hour }}<small>/hour</small></div>
+      <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="btn btn-pn-outline btn-sm">View</a>
+    </div>
+  </div>
+</div>

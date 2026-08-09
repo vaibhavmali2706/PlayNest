@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Complaints — PlayNest Partner{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-1">Feedback</p>
+        <h2>Player Complaints</h2>
+      </div>
+    </div>
+
+    {% if current_owner_warnings > 0 %}
+    <div class="alert alert-danger d-flex align-items-center gap-3 mb-4" data-aos="fade-up" style="border-radius: var(--radius-md); background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.3);">
+      <i class="fa-solid fa-triangle-exclamation text-danger fs-4"></i>
+      <div>
+        <h6 class="alert-heading fw-bold text-white mb-1">Compliance Warning: Account Status At Risk</h6>
+        <p class="mb-0 text-gray small">You have received <strong>{{ current_owner_warnings }} of 3 warnings</strong> regarding complaints. Upon receiving 3 warnings, your partner profile and all listed turfs will be eligible for removal from the network.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if complaints %}
+    <div class="row g-4">
+      {% for complaint in complaints %}
+      <div class="col-12" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 60 }}">
+        <div class="surface-navy p-4 hover-lift" style="border-radius: var(--radius-md); border-left: 4px solid #dc3545;">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <span class="badge-pill mb-2 d-inline-block bg-danger-subtle text-danger" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;">{{ complaint.status }}</span>
+              <h5 class="mb-1 text-white">{{ complaint.title }}</h5>
+              <p class="text-gray small mb-0">Filed against: <strong>{{ complaint.turf_name }}</strong> (ID: {{ complaint.turf_id }})</p>
+            </div>
+            <span class="text-gray small">{{ complaint.created_at.strftime('%Y-%m-%d') }}</span>
+          </div>
+          <hr class="divider-fade my-3">
+          <p class="text-gray mb-3" style="font-size: 0.9rem;">{{ complaint.description }}</p>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2">
+            <span class="text-gray small">Submitted by player: <strong>{{ complaint.user_name }}</strong></span>
+            <div class="d-flex gap-2">
+              <a href="mailto:{{ complaint.user_email }}?subject=Regarding your PlayNest Complaint: {{ complaint.title }}" class="btn btn-pn-outline btn-sm py-1 px-3">
+                <i class="fa-solid fa-envelope me-1 text-emerald"></i> Connect via Email
+              </a>
+              <button class="btn btn-pn-primary btn-sm py-1 px-3" onclick="openWebCheck('{{ complaint.id }}', '{{ complaint.user_name }}')">
+                <i class="fa-solid fa-comments me-1"></i> Web Check
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center" data-aos="fade-up">
+      <i class="fa-solid fa-circle-check text-emerald mb-3" style="font-size:2.5rem;"></i>
+      <h5>Clean Record!</h5>
+      <p class="text-gray small mb-0">No complaints have been filed against your turfs. Keep up the great service!</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Web Check Modal -->
+<div class="modal fade" id="webCheckModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass text-white" style="border: 1px solid var(--pn-border); background: rgba(15, 23, 42, 0.95); border-radius: var(--radius-lg);">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="webCheckTitle">Web Check Conversation</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-gray small mb-3">Initiating direct connection with <strong id="webCheckUserName">Player</strong>. Messages sent here are logged in the PlayPass support audit.</p>
+        
+        <div class="chat-box p-3 mb-3" style="background: rgba(0,0,0,0.2); border-radius: 8px; height: 180px; overflow-y: auto; border: 1px solid var(--pn-border);">
+          <div class="d-flex flex-column gap-2" id="chatMessages">
+            <div class="text-center text-gray small italic my-auto">No prior messages. Send a message to start Web Check.</div>
+          </div>
+        </div>
+
+        <form id="webCheckForm" onsubmit="sendWebCheckMessage(event)">
+          <input type="hidden" id="webCheckComplaintId">
+          <div class="input-group">
+            <input type="text" id="webCheckInput" class="pn-input" placeholder="Type your message to the player..." required style="border-radius: 8px 0 0 8px;">
+            <button type="submit" class="btn btn-pn-primary" style="border-radius: 0 8px 8px 0;">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  let bootstrapModal;
+  
+  function openWebCheck(complaintId, userName) {
+    document.getElementById('webCheckComplaintId').value = complaintId;
+    document.getElementById('webCheckUserName').innerText = userName;
+    
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = `<div class="text-center text-gray small italic my-auto">No prior messages. Send a message to start Web Check.</div>`;
+    
+    if (!bootstrapModal) {
+      bootstrapModal = new bootstrap.Modal(document.getElementById('webCheckModal'));
+    }
+    bootstrapModal.show();
+  }
+
+  function sendWebCheckMessage(e) {
+    e.preventDefault();
+    const input = document.getElementById('webCheckInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const chatMessages = document.getElementById('chatMessages');
+    // Clear initial empty text
+    if (chatMessages.querySelector('.italic')) {
+      chatMessages.innerHTML = '';
+    }
+
+    // Add partner message
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'align-self-end bg-success-subtle text-success p-2 rounded small mb-2';
+    msgDiv.style.maxWidth = '80%';
+    msgDiv.innerHTML = `<strong>You:</strong> ${msg}`;
+    chatMessages.appendChild(msgDiv);
+
+    input.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Simulate player response after a second
+    setTimeout(() => {
+      const responseDiv = document.createElement('div');
+      responseDiv.className = 'align-self-start bg-dark p-2 rounded small mb-2 text-white';
+      responseDiv.style.maxWidth = '80%';
+      responseDiv.style.border = '1px solid var(--pn-border)';
+      responseDiv.innerHTML = `<strong>Player:</strong> Received your message. Let's resolve this issue.`;
+      chatMessages.appendChild(responseDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 1500);
+  }
+</script>
+{% endblock %}
+{% endblock %}

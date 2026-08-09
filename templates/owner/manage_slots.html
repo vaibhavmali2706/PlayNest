@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block title %}Manage Slots — PlayNest Partner{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-1">Slot Management</p>
+        <h2>Manage Turf Slots</h2>
+      </div>
+      
+      <!-- Turf selector -->
+      <div style="min-width: 240px;">
+        <label class="pn-label">Select Turf</label>
+        <select onchange="window.location.href=this.value" class="pn-select">
+          {% for t in turfs %}
+            <option value="{{ url_for('owner.manage_slots', turf_id=t.id, date=selected_date) }}" {% if t.id == selected_turf.id %}selected{% endif %}>
+              {{ t.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Date selector chips -->
+    <div class="glass p-3 mb-4" data-aos="fade-up">
+      <label class="pn-label mb-2">Select Date</label>
+      <div class="d-flex gap-2 flex-wrap">
+        {% for d in dates %}
+          {% set cur_date_str = d.strftime('%Y-%m-%d') %}
+          <a href="{{ url_for('owner.manage_slots', turf_id=selected_turf.id, date=cur_date_str) }}" 
+             class="date-chip text-decoration-none text-center {% if cur_date_str == selected_date %}selected{% endif %}"
+             style="cursor: pointer; display: flex; flex-direction: column; width: 60px; padding: 0.5rem 0; border-radius: var(--radius-sm); border: 1px solid var(--pn-border); transition: all 0.2s;">
+            <div class="dow text-gray" style="font-size: 0.75rem; font-weight: 500;">{{ d.strftime('%a') }}</div>
+            <div class="dnum fw-semibold fs-5 text-white">{{ d.strftime('%d') }}</div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Today's / Selected Date Analytics Summary -->
+    <div class="row g-3 mb-4" data-aos="fade-up">
+      <div class="col-6 col-lg-3">
+        <div class="surface-navy stat-card hover-lift p-3 d-flex flex-column justify-content-between h-100" style="border-radius: var(--radius-md);">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-gray small">Online Bookings</span>
+            <div class="icon text-primary"><i class="fa-solid fa-globe"></i></div>
+          </div>
+          <div>
+            <div class="stat-number fs-3 fw-bold">{{ analytics.online_bookings }}</div>
+            <span class="text-gray-dim small">via PlayNest</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="surface-navy stat-card hover-lift p-3 d-flex flex-column justify-content-between h-100" style="border-radius: var(--radius-md);">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-gray small">Offline Unavailable</span>
+            <div class="icon text-warning"><i class="fa-solid fa-user-slash"></i></div>
+          </div>
+          <div>
+            <div class="stat-number fs-3 fw-bold">{{ analytics.offline_bookings }}</div>
+            <span class="text-gray-dim small">Walk-ins/Calls</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="surface-navy stat-card hover-lift p-3 d-flex flex-column justify-content-between h-100" style="border-radius: var(--radius-md);">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-gray small">Maintenance</span>
+            <div class="icon text-danger"><i class="fa-solid fa-wrench"></i></div>
+          </div>
+          <div>
+            <div class="stat-number fs-3 fw-bold">{{ analytics.maintenance }}</div>
+            <span class="text-gray-dim small">Slots Blocked</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="surface-navy stat-card hover-lift p-3 d-flex flex-column justify-content-between h-100" style="border-radius: var(--radius-md);">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-gray small">Occupancy Rate</span>
+            <div class="icon text-neon"><i class="fa-solid fa-percentage"></i></div>
+          </div>
+          <div>
+            <div class="stat-number fs-3 fw-bold text-neon">{{ analytics.occupancy_percentage }}%</div>
+            <span class="text-gray-dim small">Booked + Blocked</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slot list / daily view -->
+    <div class="glass p-4" data-aos="fade-up">
+      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+        <h4 class="mb-0 fw-semibold text-white">
+          Slots for {{ selected_date|pretty_date }}
+        </h4>
+        <span class="text-gray small"><i class="fa-regular fa-clock me-1"></i> 6:00 AM - 11:00 PM</span>
+      </div>
+
+      <div class="row g-3">
+        {% for slot in slots %}
+          <div class="col-md-6 col-xl-4">
+            {% if slot.status == 'available' %}
+              {% set border_class = 'border-success-subtle' %}
+              {% set badge_class = 'badge-confirmed' %}
+            {% elif slot.status == 'booked_online' %}
+              {% set border_class = 'border-primary-subtle' %}
+              {% set badge_class = 'badge-completed' %}
+            {% elif slot.status == 'maintenance' %}
+              {% set border_class = 'border-danger-subtle' %}
+              {% set badge_class = 'badge-cancelled' %}
+            {% elif slot.status == 'holiday' %}
+              {% set border_class = 'border-secondary-subtle' %}
+              {% set badge_class = 'badge-expired' %}
+            {% else %}
+              {% set border_class = 'border-warning-subtle' %}
+              {% set badge_class = 'badge-pending' %}
+            {% endif %}
+
+            <div class="surface-navy p-3 hover-lift border d-flex flex-column justify-content-between h-100 {{ border_class }}" 
+                 style="border-radius: var(--radius-sm); min-height: 140px;">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-mono fw-bold fs-6" style="color: var(--pn-white);">
+                    {{ slot.start|time_12h }} - {{ slot.end|time_12h }}
+                  </span>
+                  <span class="badge-pill {{ badge_class }}">
+                    {{ slot.display_status }}
+                  </span>
+                </div>
+
+                {% if slot.status == 'booked_online' %}
+                  <p class="text-gray small mb-0 mt-2">
+                    <i class="fa-regular fa-user me-1 text-primary"></i> {{ slot.player_name }}
+                  </p>
+                {% elif slot.status != 'available' %}
+                  <p class="text-gray small mb-0 mt-2">
+                    <i class="fa-solid fa-circle-info me-1 text-warning"></i> Reason: <strong>{{ slot.display_reason }}</strong>
+                  </p>
+                {% else %}
+                  <p class="text-gray-dim small mb-0 mt-2">
+                    <i class="fa-solid fa-circle-check me-1 text-success"></i> Slot is bookable online
+                  </p>
+                {% endif %}
+              </div>
+
+              <div class="mt-3 pt-2 border-top border-secondary d-flex justify-content-end">
+                {% if slot.is_past %}
+                  <span class="text-gray-dim small italic"><i class="fa-solid fa-ban me-1"></i> Slot has passed</span>
+                {% elif slot.status == 'booked_online' %}
+                  {% if slot.booking_id %}
+                    <a href="{{ url_for('owner.bookings') }}" class="btn btn-pn-outline btn-sm py-1 px-3" style="font-size:0.75rem;">
+                      <i class="fa-solid fa-ticket me-1"></i> View Booking
+                    </a>
+                  {% else %}
+                    <button class="btn btn-pn-outline btn-sm py-1 px-3" disabled style="font-size:0.75rem;">
+                      <i class="fa-solid fa-globe me-1"></i> Online Booking
+                    </button>
+                  {% endif %}
+                {% elif slot.status == 'available' %}
+                  <button type="button" class="btn btn-pn-danger btn-sm py-1 px-3" style="font-size:0.75rem;"
+                          onclick="openMarkUnavailableModal('{{ slot.start }}', '{{ slot.end }}')">
+                    <i class="fa-solid fa-user-slash me-1"></i> Mark as Unavailable
+                  </button>
+                {% else %}
+                  <form method="POST" action="{{ url_for('owner.manage_slots', turf_id=selected_turf.id, date=selected_date) }}">
+                    <input type="hidden" name="action" value="mark_available">
+                    <input type="hidden" name="start_time" value="{{ slot.start }}">
+                    <input type="hidden" name="end_time" value="{{ slot.end }}">
+                    <button type="submit" class="btn btn-pn-primary btn-sm py-1 px-3" style="font-size:0.75rem; background: var(--pn-emerald); color: var(--pn-charcoal);">
+                      <i class="fa-solid fa-rotate-left me-1"></i> Mark Available Again
+                    </button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mark as Unavailable Modal -->
+<div class="modal fade" id="unavailableModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass text-white" style="border: 1px solid var(--pn-border); background: rgba(15, 23, 42, 0.95); border-radius: var(--radius-lg);">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold text-white mb-1">Mark as Unavailable</h5>
+          <p class="text-gray small mb-0" id="modalSlotTime">Slot: -- : --</p>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <form method="POST" action="{{ url_for('owner.manage_slots', turf_id=selected_turf.id, date=selected_date) }}">
+          <input type="hidden" name="action" value="mark_unavailable">
+          <input type="hidden" name="start_time" id="modalStartTime">
+          <input type="hidden" name="end_time" id="modalEndTime">
+
+          <p class="text-gray small mb-3">Why is this slot unavailable?</p>
+
+          <div class="d-flex flex-column gap-2 mb-4">
+            {% for value, label in [
+              ('walk_in', 'Walk-in Customer'),
+              ('phone_booking', 'Phone Booking'),
+              ('whatsapp_booking', 'WhatsApp Booking'),
+              ('maintenance', 'Maintenance'),
+              ('holiday', 'Holiday'),
+              ('tournament', 'Tournament'),
+              ('personal_use', 'Personal Use'),
+              ('other', 'Other')
+            ] %}
+              <label class="d-flex align-items-center gap-3 p-2 rounded hover-emerald" style="cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid var(--pn-border); transition: all 0.2s;">
+                <input type="radio" name="reason" value="{{ value }}" {% if loop.first %}checked{% endif %} style="accent-color: var(--pn-emerald); width: 18px; height: 18px;">
+                <span class="small fw-medium">{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end border-top border-secondary pt-3">
+            <button type="button" class="btn btn-pn-outline btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-pn-primary btn-sm">Confirm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  let modalInstance;
+  
+  function openMarkUnavailableModal(startTime, endTime) {
+    document.getElementById('modalStartTime').value = startTime;
+    document.getElementById('modalEndTime').value = endTime;
+    
+    // Format display time
+    const formatTime = (tStr) => {
+      const parts = tStr.split(':');
+      let h = parseInt(parts[0]);
+      const m = parts[1];
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      h = h ? h : 12;
+      return `${h}:${m} ${ampm}`;
+    };
+
+    document.getElementById('modalSlotTime').innerText = `Slot: ${formatTime(startTime)} - ${formatTime(endTime)}`;
+    
+    if (!modalInstance) {
+      modalInstance = new bootstrap.Modal(document.getElementById('unavailableModal'));
+    }
+    modalInstance.show();
+  }
+</script>
+{% endblock %}
+{% endblock %}

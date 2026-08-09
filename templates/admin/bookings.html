@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Bookings — Admin{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">All activity</p>
+      <h2>Bookings</h2>
+    </div>
+
+    {% if bookings %}
+    <div class="surface-navy p-0" style="overflow-x:auto;" data-aos="fade-up">
+      <table class="pn-table">
+        <thead><tr><th>ID</th><th>Turf</th><th>City</th><th>Player</th><th>Date/Time</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td class="text-mono">{{ b.id }}</td>
+            <td>{{ b.turf_name }}</td>
+            <td>{{ b.turf_city }}</td>
+            <td>{{ b.player_name }}</td>
+            <td>{{ b.date }} · {{ b.start_time }}</td>
+            <td>₹{{ b.price }}</td>
+            <td><span class="badge-pill {{ b.status|status_badge }}">{{ b.status }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center"><p class="text-gray mb-0">No bookings yet across the platform.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

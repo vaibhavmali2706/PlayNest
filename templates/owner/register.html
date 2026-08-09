@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+{% block title %}Become a PlayNest Partner — PlayNest{% endblock %}
+{% block content %}
+<section class="auth-shell d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 6rem 1.5rem 3rem 1.5rem; background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);">
+  <div class="container" style="max-width: 680px;">
+    
+    <div class="glass p-4 p-md-5 hover-lift" data-aos="zoom-in" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+      <a href="{{ url_for('owner.login') }}" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 mb-4 hover-emerald" style="transition: color 0.2s;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Partner Sign In
+      </a>
+      
+      <!-- Stepper Progress Header -->
+      <div class="text-center mb-5">
+        <h3 class="fw-bold mb-1">Partner Registration</h3>
+        <p class="text-gray small">Register your arena, upload verification documents, and start accepting bookings.</p>
+        
+        <div class="d-flex justify-content-center align-items-center gap-2 mt-4">
+          <div class="step-indicator active-step" id="stepIndicator1">1</div>
+          <div class="step-line" id="stepLine1"></div>
+          <div class="step-indicator" id="stepIndicator2">2</div>
+          <div class="step-line" id="stepLine2"></div>
+          <div class="step-indicator" id="stepIndicator3">3</div>
+        </div>
+        <div class="row mt-2" style="font-size:0.75rem; color:var(--pn-gray);">
+          <div class="col-4 fw-semibold text-emerald" id="stepTitle1">Account Credentials</div>
+          <div class="col-4" id="stepTitle2">Business Info</div>
+          <div class="col-4" id="stepTitle3">Document Uploads</div>
+        </div>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" id="registrationForm" class="needs-validation" novalidate>
+        
+        <!-- STEP 1: Account Credentials -->
+        <div class="form-step" id="step1">
+          <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-user-lock text-emerald me-2"></i> Account Details</h5>
+          
+          <div class="form-group mb-3">
+            <label class="pn-label">Owner's Full Name</label>
+            <input type="text" name="name" class="pn-input" placeholder="e.g. Vaibhav Patil" required>
+            <div class="invalid-feedback">Full name is required.</div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="pn-label">Email Address</label>
+            <input type="email" name="email" class="pn-input" placeholder="e.g. vaibhav@arena.com" required>
+            <div class="invalid-feedback">Enter a valid email address.</div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="pn-label">Mobile Number</label>
+            <input type="tel" name="phone" pattern="^\d{10}$" class="pn-input" placeholder="e.g. 9876543210" required>
+            <div class="invalid-feedback">Enter a valid 10-digit mobile number.</div>
+          </div>
+
+          <div class="form-group mb-4">
+            <label class="pn-label">Choose Password</label>
+            <div class="position-relative">
+              <input type="password" name="password" class="pn-input" placeholder="••••••••" required minlength="8" style="padding-right: 3rem;">
+              <button type="button" class="btn-toggle-password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--pn-gray); cursor: pointer; padding: 0.25rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 10;" tabindex="-1">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback">Password must be at least 8 characters.</div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-pn-primary px-4" onclick="nextStep(2)">
+              Next: Business Info <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Business details -->
+        <div class="form-step d-none" id="step2">
+          <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-building text-emerald me-2"></i> Business Information</h5>
+          
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="pn-label">Turf/Arena Name</label>
+              <input type="text" name="turf_name" class="pn-input" placeholder="e.g. Elite Football Arena" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="pn-label">Business License (GST No. / Registration)</label>
+              <input type="text" name="business_license" class="pn-input" placeholder="License Number" required>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="pn-label">Owner Aadhaar Card Number</label>
+              <input type="text" name="aadhaar" pattern="^\d{12}$" class="pn-input" placeholder="12-digit Aadhaar" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="pn-label">PAN Card Number</label>
+              <input type="text" name="pan" class="pn-input" placeholder="10-character PAN" required>
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="pn-label">Turf Physical Address</label>
+            <input type="text" name="address" class="pn-input" placeholder="Street name, landmark" required>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+              <label class="pn-label">City</label>
+              <input type="text" name="city" class="pn-input" placeholder="e.g. Kolhapur" required>
+            </div>
+            <div class="col-sm-4">
+              <label class="pn-label">State</label>
+              <input type="text" name="state" class="pn-input" placeholder="e.g. Maharashtra" required>
+            </div>
+            <div class="col-sm-4">
+              <label class="pn-label">Pincode</label>
+              <input type="text" name="pincode" class="pn-input" placeholder="e.g. 416012" required>
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="pn-label">Bank Account Details (Optional - for payouts)</label>
+            <input type="text" name="bank_details" class="pn-input" placeholder="A/C No, Bank Name, IFSC Code">
+          </div>
+
+          <div class="form-group mb-4">
+            <label class="pn-label">Google Maps Location Link (Optional)</label>
+            <input type="url" name="google_maps_location" class="pn-input" placeholder="https://maps.google.com/?q=...">
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-pn-outline px-4" onclick="prevStep(1)">
+              <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <button type="button" class="btn btn-pn-primary px-4" onclick="nextStep(3)">
+              Next: Uploads <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Document uploads & Images -->
+        <div class="form-step d-none" id="step3">
+          <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-file-arrow-up text-emerald me-2"></i> Documents & Arena Gallery</h5>
+          
+          <p class="text-gray small mb-4"><i class="fa-solid fa-circle-info"></i> Please upload clear image files (.jpg, .jpeg, .png). Maximum file size is 5MB per image.</p>
+          
+          <!-- Identity Proof -->
+          <div class="mb-4">
+            <label class="pn-label">Identity Proof (Aadhaar / Passport / DL)</label>
+            <input type="file" name="identity_proof" class="pn-input" accept="image/*" required onchange="previewSingle(this, 'idPreview')">
+            <div class="img-preview-box mt-2 d-none" id="idPreview"></div>
+          </div>
+
+          <!-- Front Image -->
+          <div class="mb-4">
+            <label class="pn-label">Front Entrance Cover Image</label>
+            <input type="file" name="front_image" class="pn-input" accept="image/*" required onchange="previewSingle(this, 'frontPreview')">
+            <div class="img-preview-box mt-2 d-none" id="frontPreview"></div>
+          </div>
+
+          <!-- Ground Images -->
+          <div class="mb-4">
+            <label class="pn-label">Ground/Playing Area Images (Multiple)</label>
+            <input type="file" name="ground_images" class="pn-input" accept="image/*" multiple onchange="previewMultiple(this, 'groundPreviews')">
+            <div class="img-previews-grid mt-2" id="groundPreviews"></div>
+          </div>
+
+          <!-- Night / Lighting Images -->
+          <div class="mb-4">
+            <label class="pn-label">Night / Lighting Shots (Multiple)</label>
+            <input type="file" name="night_images" class="pn-input" accept="image/*" multiple onchange="previewMultiple(this, 'nightPreviews')">
+            <div class="img-previews-grid mt-2" id="nightPreviews"></div>
+          </div>
+
+          <!-- Amenities Upload Grid -->
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label class="pn-label">Parking Facilities Images</label>
+              <input type="file" name="parking_images" class="pn-input" accept="image/*" multiple onchange="previewMultiple(this, 'parkingPreviews')">
+              <div class="img-previews-grid mt-2" id="parkingPreviews"></div>
+            </div>
+            <div class="col-sm-6">
+              <label class="pn-label">Washroom Images</label>
+              <input type="file" name="washroom_images" class="pn-input" accept="image/*" multiple onchange="previewMultiple(this, 'washroomPreviews')">
+              <div class="img-previews-grid mt-2" id="washroomPreviews"></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="pn-label">Changing Room Images</label>
+            <input type="file" name="changing_room_images" class="pn-input" accept="image/*" multiple onchange="previewMultiple(this, 'changingPreviews')">
+            <div class="img-previews-grid mt-2" id="changingPreviews"></div>
+          </div>
+
+          <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-pn-outline px-4" onclick="prevStep(2)">
+              <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <button type="submit" class="btn btn-pn-primary px-5" style="background: linear-gradient(135deg, var(--pn-blue) 0%, var(--pn-emerald) 100%);">
+              Submit Application <i class="fa-solid fa-circle-check ms-1"></i>
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .step-indicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--pn-border);
+    color: var(--pn-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .step-indicator.active-step {
+    background-color: var(--pn-emerald);
+    color: var(--pn-charcoal);
+    border-color: var(--pn-emerald);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
+  .step-indicator.completed-step {
+    background-color: var(--pn-blue);
+    color: var(--pn-white);
+    border-color: var(--pn-blue);
+  }
+  .step-line {
+    flex-grow: 1;
+    height: 2px;
+    background-color: var(--pn-border);
+    max-width: 80px;
+    transition: all 0.3s ease;
+  }
+  .step-line.completed-line {
+    background-color: var(--pn-emerald);
+  }
+  .img-preview-box img {
+    width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--pn-border);
+  }
+  .img-previews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+  }
+  .img-previews-grid img {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--pn-border);
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentStep = 1;
+
+  function nextStep(step) {
+    // Validate current step
+    const currentFormStep = document.getElementById('step' + currentStep);
+    const inputs = currentFormStep.querySelectorAll('input, select, textarea');
+    let valid = true;
+    
+    inputs.forEach(input => {
+      if (!input.checkValidity()) {
+        input.classList.add('is-invalid');
+        valid = false;
+      } else {
+        input.classList.remove('is-invalid');
+      }
+    });
+
+    if (!valid) {
+      flashError("Please fill out all required fields before proceeding.");
+      return;
+    }
+
+    // Advance
+    document.getElementById('step' + currentStep).classList.add('d-none');
+    document.getElementById('step' + step).classList.remove('d-none');
+    
+    // Update indicators
+    if (step > currentStep) {
+      document.getElementById('stepIndicator' + currentStep).classList.remove('active-step');
+      document.getElementById('stepIndicator' + currentStep).classList.add('completed-step');
+      document.getElementById('stepLine' + currentStep).classList.add('completed-line');
+    }
+    document.getElementById('stepIndicator' + step).classList.add('active-step');
+    
+    // Update title highlight
+    document.getElementById('stepTitle' + currentStep).classList.remove('text-emerald', 'fw-semibold');
+    document.getElementById('stepTitle' + step).classList.add('text-emerald', 'fw-semibold');
+
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevStep(step) {
+    document.getElementById('step' + currentStep).classList.add('d-none');
+    document.getElementById('step' + step).classList.remove('d-none');
+    
+    document.getElementById('stepIndicator' + currentStep).classList.remove('active-step');
+    document.getElementById('stepIndicator' + step).classList.remove('completed-step');
+    document.getElementById('stepIndicator' + step).classList.add('active-step');
+    document.getElementById('stepLine' + step).classList.remove('completed-line');
+    
+    document.getElementById('stepTitle' + currentStep).classList.remove('text-emerald', 'fw-semibold');
+    document.getElementById('stepTitle' + step).classList.add('text-emerald', 'fw-semibold');
+
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function previewSingle(input, previewId) {
+    const box = document.getElementById(previewId);
+    box.innerHTML = "";
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        box.appendChild(img);
+        box.classList.remove("d-none");
+      };
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      box.classList.add("d-none");
+    }
+  }
+
+  function previewMultiple(input, gridId) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = "";
+    if (input.files) {
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          grid.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  function flashError(msg) {
+    // Show premium client-side notice
+    const alertBox = document.createElement("div");
+    alertBox.className = "alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-4";
+    alertBox.style.zIndex = "99999";
+    alertBox.innerHTML = `
+      <i class="fa-solid fa-triangle-exclamation me-2"></i> ${msg}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertBox);
+    setTimeout(() => alertBox.remove(), 4000);
+  }
+</script>
+{% endblock %}
+

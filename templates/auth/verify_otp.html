@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Verify OTP — PlayNest{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div class="glass auth-card text-center" data-aos="zoom-in">
+    <i class="fa-solid fa-envelope-open-text text-emerald" style="font-size:2rem;"></i>
+    <h3 class="mt-3 mb-1">Check your email</h3>
+    <p class="text-gray small mb-4">We sent a 6-digit code to <br><strong class="text-mono">{{ email }}</strong></p>
+
+    <form method="POST" id="otpForm">
+      {{ form.hidden_tag() }}
+      <input type="hidden" name="otp_code" id="otp_code">
+      <div class="otp-inputs mb-4">
+        {% for i in range(6) %}
+        <input type="text" inputmode="numeric" maxlength="1" class="pn-input">
+        {% endfor %}
+      </div>
+      {% for err in form.otp_code.errors %}<div class="text-danger small mb-3">{{ err }}</div>{% endfor %}
+
+      <button type="submit" class="btn btn-pn-primary btn-block mb-3">
+        Verify & Continue <i class="fa-solid fa-check"></i>
+      </button>
+    </form>
+
+    <p class="text-gray small mb-2">{{ attempts_remaining }} attempts remaining · expires in {{ valid_minutes }} min</p>
+
+    <form method="POST" action="{{ url_for('auth.resend_otp') }}">
+      <button type="submit" id="resendBtn" data-wait="{{ resend_wait }}" class="btn btn-pn-outline btn-sm" {% if not can_resend %}disabled{% endif %}>
+        <i class="fa-solid fa-rotate-right"></i> Resend Code
+      </button>
+      <div id="resendCountdown" class="text-gray small mt-2"></div>
+    </form>
+
+    <a href="{{ url_for('auth.login') }}" class="text-gray small d-inline-block mt-4">
+      <i class="fa-solid fa-arrow-left"></i> Use a different email
+    </a>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/otp.js') }}"></script>
+{% endblock %}

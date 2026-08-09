@@ -1,0 +1,247 @@
+/* ==========================================================================
+   PLAYNEST DESIGN TOKENS
+   Dark, premium, sports-tech. Signature motif: the ticket perforation
+   (dashed rule + notch) borrowed from the PlayPass, echoed across cards,
+   dividers and the booking summary to tie the whole product to its
+   single most memorable artifact.
+   ========================================================================== */
+
+:root {
+  /* Palette */
+  --pn-charcoal: #0B0F0E;
+  --pn-charcoal-soft: #0E1412;
+  --pn-navy: #101B2D;
+  --pn-navy-soft: #16233A;
+  --pn-emerald: #10B981;
+  --pn-emerald-dim: #0B7A57;
+  --pn-blue: #3B82F6;
+  --pn-neon: #39FF88;
+  --pn-white: #FFFFFF;
+  --pn-gray: #A3AAB8;
+  --pn-gray-dim: #6B7484;
+  --pn-border: rgba(255, 255, 255, 0.08);
+  --pn-glass: rgba(255, 255, 255, 0.04);
+  --pn-danger: #F87171;
+  --pn-warning: #FBBF24;
+
+  /* Typography */
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Radius / shadow */
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --shadow-glow: 0 8px 40px rgba(16, 185, 129, 0.12);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--pn-charcoal);
+  color: var(--pn-white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--pn-emerald); color: var(--pn-charcoal); }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--pn-white);
+}
+
+a { text-decoration: none; color: inherit; }
+
+.text-mono { font-family: var(--font-mono); letter-spacing: 0.02em; }
+.text-gray { color: var(--pn-gray); }
+.text-emerald { color: var(--pn-emerald); }
+.text-neon { color: var(--pn-neon); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--pn-charcoal); }
+::-webkit-scrollbar-thumb { background: var(--pn-navy-soft); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--pn-emerald-dim); }
+
+/* Focus visibility (accessibility) */
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, .btn:focus-visible {
+  outline: 2px solid var(--pn-neon);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Glass / surfaces ---------- */
+.glass {
+  background: var(--pn-glass);
+  border: 1px solid var(--pn-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-md);
+}
+
+.surface-navy {
+  background: linear-gradient(180deg, var(--pn-navy) 0%, var(--pn-navy-soft) 100%);
+  border: 1px solid var(--pn-border);
+  border-radius: var(--radius-md);
+}
+
+/* ---------- Perforation motif ---------- */
+.perforation {
+  position: relative;
+  height: 0;
+  border-top: 2px dashed rgba(255, 255, 255, 0.15);
+  margin: 0;
+}
+.perforation::before, .perforation::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  background: var(--pn-charcoal);
+  border-radius: 50%;
+}
+.perforation::before { left: -10px; }
+.perforation::after { right: -10px; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-pn-primary {
+  background: linear-gradient(135deg, var(--pn-emerald) 0%, var(--pn-neon) 100%);
+  color: var(--pn-charcoal);
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+}
+.btn-pn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(57, 255, 136, 0.45);
+  color: var(--pn-charcoal);
+}
+
+.btn-pn-outline {
+  background: transparent;
+  color: var(--pn-white);
+  border: 1.5px solid var(--pn-border);
+}
+.btn-pn-outline:hover {
+  border-color: var(--pn-emerald);
+  color: var(--pn-emerald);
+  transform: translateY(-2px);
+}
+
+.btn-pn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--pn-white);
+}
+.btn-pn-ghost:hover { background: rgba(255, 255, 255, 0.12); }
+
+.btn-pn-danger {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--pn-danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.btn-pn-danger:hover:not(:disabled) { background: rgba(248, 113, 113, 0.22); }
+.btn-pn-danger:disabled, .btn-pn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-sm { padding: 0.45rem 1.1rem; font-size: 0.85rem; }
+.btn-block { width: 100%; justify-content: center; }
+
+/* ---------- Badges ---------- */
+.badge-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.badge-pending   { background: rgba(251, 191, 36, 0.14); color: var(--pn-warning); }
+.badge-confirmed { background: rgba(16, 185, 129, 0.16); color: var(--pn-emerald); }
+.badge-completed { background: rgba(59, 130, 246, 0.16); color: var(--pn-blue); }
+.badge-cancelled { background: rgba(248, 113, 113, 0.14); color: var(--pn-danger); }
+.badge-expired   { background: rgba(163, 170, 184, 0.14); color: var(--pn-gray); }
+
+/* ---------- Form controls ---------- */
+.pn-input, .pn-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid var(--pn-border);
+  color: var(--pn-white);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  width: 100%;
+  font-family: var(--font-body);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.pn-input::placeholder { color: var(--pn-gray-dim); }
+.pn-input:focus, .pn-select:focus {
+  outline: none;
+  border-color: var(--pn-emerald);
+  background: rgba(255, 255, 255, 0.08);
+}
+.pn-label {
+  font-size: 0.8rem;
+  color: var(--pn-gray);
+  margin-bottom: 0.4rem;
+  display: block;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Utility ---------- */
+.section { padding: 6rem 0; }
+@media (max-width: 767px) { .section { padding: 3.5rem 0; } }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--pn-emerald);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--pn-emerald) 0%, var(--pn-neon) 50%, var(--pn-blue) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hover-lift { transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease; }
+.hover-lift:hover { transform: translateY(-8px); box-shadow: var(--shadow-glow); }
+
+.divider-fade {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pn-border), transparent);
+  border: none;
+}

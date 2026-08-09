@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Browse Turfs — PlayNest{% endblock %}
+{% block content %}
+
+<section style="padding:8rem 0 2rem;">
+  <div class="container">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-2">Discover</p>
+      <h1 style="font-size:clamp(1.8rem,3.5vw,2.6rem);">Find your next turf</h1>
+    </div>
+
+    <form method="GET" class="glass p-3 p-md-4 mb-5 d-flex flex-wrap gap-3 align-items-center" data-aos="fade-up">
+      <div class="flex-grow-1" style="min-width:220px;">
+        <input type="text" name="q" value="{{ selected.q }}" class="pn-input" placeholder="Search by turf, city or sport...">
+      </div>
+      <select name="city" class="pn-select" style="max-width:180px;">
+        <option value="">All Cities</option>
+        {% for c in cities %}<option value="{{ c }}" {% if selected.city == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select>
+      <select name="sort" class="pn-select" style="max-width:180px;">
+        <option value="recommended" {% if selected.sort == 'recommended' %}selected{% endif %}>Recommended</option>
+        <option value="rating" {% if selected.sort == 'rating' %}selected{% endif %}>Top Rated</option>
+        <option value="price_low" {% if selected.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+        <option value="price_high" {% if selected.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+      </select>
+      <button type="submit" class="btn btn-pn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+    </form>
+
+    <div class="row g-4">
+      <!-- Filters -->
+      <div class="col-lg-3">
+        <form method="GET" class="glass filter-panel" data-aos="fade-right">
+          <input type="hidden" name="q" value="{{ selected.q }}">
+          <input type="hidden" name="city" value="{{ selected.city }}">
+          <input type="hidden" name="sort" value="{{ selected.sort }}">
+
+          <div class="filter-group">
+            <h6>Sport</h6>
+            {% for sport in sports %}
+            <label class="pn-checkbox">
+              <input type="radio" name="sport" value="{{ sport.name }}" onchange="this.form.submit()" {% if selected.sport == sport.name %}checked{% endif %}>
+              {{ sport.name }}
+            </label>
+            {% endfor %}
+            {% if selected.sport %}<a href="{{ url_for('turfs.listing', q=selected.q, city=selected.city, sort=selected.sort) }}" class="text-emerald small">Clear sport</a>{% endif %}
+          </div>
+
+          <div class="filter-group">
+            <h6>Type</h6>
+            <label class="pn-checkbox"><input type="radio" name="type" value="" onchange="this.form.submit()" {% if not selected.type %}checked{% endif %}> Any</label>
+            <label class="pn-checkbox"><input type="radio" name="type" value="Indoor" onchange="this.form.submit()" {% if selected.type == 'Indoor' %}checked{% endif %}> Indoor</label>
+            <label class="pn-checkbox"><input type="radio" name="type" value="Outdoor" onchange="this.form.submit()" {% if selected.type == 'Outdoor' %}checked{% endif %}> Outdoor</label>
+          </div>
+
+          <div class="filter-group">
+            <h6>Facilities</h6>
+            {% for f in all_facilities %}
+            <label class="pn-checkbox">
+              <input type="checkbox" name="facility" value="{{ f }}" onchange="this.form.submit()" {% if f in selected.facilities %}checked{% endif %}>
+              {{ f }}
+            </label>
+            {% endfor %}
+          </div>
+
+          <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-ghost btn-sm btn-block">Reset filters</a>
+        </form>
+      </div>
+
+      <!-- Results -->
+      <div class="col-lg-9">
+        <p class="text-gray mb-4">{{ turfs|length }} turf{{ 's' if turfs|length != 1 }} found</p>
+        {% if turfs %}
+        <div class="row g-4">
+          {% for turf in turfs %}
+          <div class="col-md-6 col-xl-4">
+            {% include "components/turf_card.html" %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="glass p-5 text-center">
+          <i class="fa-solid fa-magnifying-glass-minus text-gray mb-3" style="font-size:2rem;"></i>
+          <h5>No turfs match your filters</h5>
+          <p class="text-gray small">Try widening your search or clearing a filter.</p>
+          <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-outline btn-sm">Reset filters</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

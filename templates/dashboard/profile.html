@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}My Profile — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/dashboard_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Account</p>
+      <h2>My Profile</h2>
+    </div>
+
+    <div class="surface-navy p-4 p-md-5" style="max-width:520px;" data-aos="fade-up">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="d-flex align-items-center justify-content-center" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#10B981,#39FF88);color:#0B0F0E;font-weight:700;font-size:1.4rem;">
+          {{ user.avatar_initials }}
+        </div>
+        <div>
+          <h5 class="mb-0">{{ user.name }}</h5>
+          <span class="badge-pill badge-confirmed"><i class="fa-solid fa-circle-check"></i> Verified</span>
+        </div>
+      </div>
+
+      <div class="mb-3"><span class="pn-label">Email</span><div>{{ user.email }}</div></div>
+      <div class="mb-3"><span class="pn-label">Phone</span><div>{{ user.phone or "—" }}</div></div>
+      <div class="mb-3"><span class="pn-label">City</span><div>{{ user.city or "—" }}</div></div>
+      <div class="mb-4"><span class="pn-label">Member since</span><div>{{ user.created_at.strftime("%d %b %Y") }}</div></div>
+
+      <p class="text-gray small">Profile editing is coming soon — for now, your details update automatically whenever you sign in again.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

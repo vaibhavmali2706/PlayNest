@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}PlayNest — Book. Play. Repeat.{% endblock %}
+
+{% block content %}
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg">
+    <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=1600&q=60">
+      <source src="https://cdn.coverr.co/videos/coverr-playing-football-on-a-field-2633/1080p.mp4" type="video/mp4">
+    </video>
+    <div class="hero-scrim"></div>
+  </div>
+
+  <div class="container hero-content">
+    <div class="row">
+      <div class="col-lg-8">
+        <p class="eyebrow hero-eyebrow mb-3">500+ verified turfs · 15+ cities</p>
+        <h1 class="mb-4">
+          <span class="d-block hero-title-line">Book Your Game.</span>
+          <span class="d-block hero-title-line">Anytime. <span class="gradient-text">Anywhere.</span></span>
+        </h1>
+        <p class="subhead hero-sub mb-5">Find premium football, cricket, badminton and multi-sport arenas in seconds. Real-time availability, instant confirmation, zero hassle.</p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-primary hero-cta">
+            <i class="fa-solid fa-magnifying-glass"></i> Explore Turfs
+          </a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-pn-outline hero-cta">
+            Get Started <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator hero-scroll-indicator">
+    SCROLL
+    <div class="chevron"></div>
+  </div>
+</section>
+
+<!-- ============ SOCIAL PROOF ============ -->
+<section class="section pt-5 pb-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-6 col-md-3 stat-block" data-aos="fade-up">
+        <div class="stat-number"><span data-counter="500" data-suffix="+">0</span></div>
+        <div class="stat-label">Turfs</div>
+      </div>
+      <div class="col-6 col-md-3 stat-block" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-number"><span data-counter="25000" data-suffix="+">0</span></div>
+        <div class="stat-label">Bookings</div>
+      </div>
+      <div class="col-6 col-md-3 stat-block" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-number"><span data-counter="15" data-suffix="+">0</span></div>
+        <div class="stat-label">Cities</div>
+      </div>
+      <div class="col-6 col-md-3 stat-block" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-number"><span data-counter="4.9" data-suffix="★">0</span></div>
+        <div class="stat-label">Average Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY PLAYNEST ============ -->
+<section class="section" id="why-playnest">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <p class="eyebrow mb-2">Why PlayNest</p>
+      <h2 style="font-size:clamp(1.8rem,3.5vw,2.6rem);">Everything a player needs, nothing they don't</h2>
+    </div>
+    <div class="row g-4">
+      {% set features = [
+        ("fa-shield-check", "Verified Turf Owners", "Every listing is vetted so you always know exactly what you're booking."),
+        ("fa-bolt", "Real-time Slot Availability", "See genuinely open slots — no double bookings, no awkward phone calls."),
+        ("fa-envelope-open-text", "Email OTP Login", "No passwords to remember. Sign in with a one-time code, every time."),
+        ("fa-ticket", "Instant Booking", "Confirm a slot in under a minute and get your PlayPass immediately."),
+        ("fa-gem", "Premium Experience", "A booking flow that feels as good as the game you're about to play."),
+        ("fa-mobile-screen", "Responsive Design", "Built to work beautifully on your phone, tablet, or laptop."),
+      ] %}
+      {% for icon, title, desc in features %}
+      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 60 }}">
+        <div class="glass feature-card hover-lift">
+          <div class="feature-icon"><i class="fa-solid {{ icon }}"></i></div>
+          <h5 class="mb-2">{{ title }}</h5>
+          <p class="text-gray small mb-0">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPORTS ============ -->
+<section class="section" style="background:var(--pn-charcoal-soft);">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <p class="eyebrow mb-2">Pick your game</p>
+      <h2 style="font-size:clamp(1.8rem,3.5vw,2.6rem);">Every sport. One platform.</h2>
+    </div>
+    <div class="row g-3">
+      {% for sport in sports %}
+      <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 40 }}">
+        <a href="{{ url_for('turfs.listing', sport=sport.name) }}" class="glass sport-card hover-lift d-block">
+          <div class="sport-icon" style="color:{{ sport.color }};">
+            <i class="fa-solid {{ sport.icon }}"></i>
+          </div>
+          <h6>{{ sport.name }}</h6>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED TURFS ============ -->
+<section class="section">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-5" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-2">Handpicked for you</p>
+        <h2 style="font-size:clamp(1.8rem,3.5vw,2.6rem);">Top-rated turfs this week</h2>
+      </div>
+      <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-outline">View all turfs <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for turf in featured_turfs %}
+      <div class="col-md-6 col-lg-4">
+        {% include "components/turf_card.html" %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section" id="how-it-works" style="background:var(--pn-charcoal-soft);">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5" data-aos="fade-right">
+        <p class="eyebrow mb-2">How it works</p>
+        <h2 class="mb-4" style="font-size:clamp(1.8rem,3.5vw,2.6rem);">From kickoff thought to kickoff whistle</h2>
+        <p class="text-gray">Seven steps, one smooth flow — most players go from browsing to a confirmed PlayPass in under two minutes.</p>
+        <a href="{{ url_for('turfs.listing') }}" class="btn btn-pn-primary mt-3">Start Booking <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="col-lg-7" data-aos="fade-left">
+        <div class="glass p-4 p-md-5 step-chain">
+          {% set steps = ["Choose Sport", "Choose Turf", "Choose Date", "Choose Time Slot", "Confirm Booking", "Download PlayPass", "Play"] %}
+          {% for step in steps %}
+          <div class="step-item">
+            <div class="step-num">{{ "%02d"|format(loop.index) }}</div>
+            <div class="pt-2"><h6 class="mb-0">{{ step }}</h6></div>
+          </div>
+          {% if not loop.last %}<div class="step-connector"></div>{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section text-center">
+  <div class="container" data-aos="zoom-in">
+    <div class="glass p-5 bg-noise-glow" style="border-radius:32px;">
+      <h2 class="mb-3" style="font-size:clamp(1.8rem,4vw,3rem);">Your next game is a few taps away.</h2>
+      <p class="text-gray mb-4">Join thousands of players already booking smarter with PlayNest.</p>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-pn-primary">Get Started Free <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

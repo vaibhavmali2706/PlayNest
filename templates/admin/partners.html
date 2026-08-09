@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}Manage Partners — PlayNest Control Room{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">compliance & operations</p>
+      <h2>Manage Turf Partners 🏢</h2>
+      <p class="text-gray small">Verify credentials, audit uploads (PAN, Aadhaar, Business License), and approve/reject partner applications.</p>
+    </div>
+
+    <!-- Partners List Table -->
+    <div class="glass p-4" data-aos="fade-up">
+      {% if partners %}
+      <div style="overflow-x:auto;">
+        <table class="pn-table" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Owner Name</th>
+              <th>Turf Name</th>
+              <th>Email / Phone</th>
+              <th>Govt. IDs (Aadhaar/PAN)</th>
+              <th>Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for partner in partners %}
+            <tr style="border-bottom: 1px solid var(--pn-border);">
+              <td class="text-mono small">{{ partner.id }}</td>
+              <td>
+                <div class="fw-semibold text-white">{{ partner.name }}</div>
+                <div class="text-gray small">{{ partner.city }}, {{ partner.state }}</div>
+              </td>
+              <td>
+                <div class="text-white fw-medium">{{ partner.turf_name }}</div>
+                <div class="text-gray small text-truncate" style="max-width:180px;">{{ partner.address }}</div>
+              </td>
+              <td>
+                <div class="text-mono small">{{ partner.email }}</div>
+                <div class="text-gray small">{{ partner.phone }}</div>
+              </td>
+              <td>
+                <div class="small">
+                  <strong>Aadhaar:</strong> <span class="text-mono">{{ partner.aadhaar or 'N/A' }}</span>
+                </div>
+                <div class="small mt-1">
+                  <strong>PAN:</strong> <span class="text-mono">{{ partner.pan or 'N/A' }}</span>
+                </div>
+              </td>
+              <td>
+                {% if partner.status == 'Approved' %}
+                  <span class="badge-pill badge-confirmed"><i class="fa-solid fa-circle-check"></i> Approved</span>
+                {% elif partner.status == 'Pending' %}
+                  <span class="badge-pill badge-pending"><i class="fa-solid fa-spinner fa-spin"></i> Pending</span>
+                {% else %}
+                  <span class="badge-pill badge-cancelled"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="d-flex justify-content-end gap-2">
+                  <button type="button" class="btn btn-pn-ghost btn-sm py-1 px-2" style="font-size:0.75rem;" onclick="viewDocs('{{ partner.id }}')">
+                    <i class="fa-solid fa-file-invoice"></i> Audit Docs
+                  </button>
+                  
+                  {% if partner.status == 'Pending' %}
+                  <form method="POST" action="{{ url_for('admin.approve_partner', owner_id=partner.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-pn-primary btn-sm py-1 px-2" style="font-size:0.75rem;">
+                      Approve
+                    </button>
+                  </form>
+                  <form method="POST" action="{{ url_for('admin.reject_partner', owner_id=partner.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-pn-danger btn-sm py-1 px-2" style="font-size:0.75rem;">
+                      Reject
+                    </button>
+                  </form>
+                  {% endif %}
+                  <!-- Warnings status & action -->
+                  <div class="d-inline-flex align-items-center gap-1 me-2 align-middle">
+                    <span class="badge-pill bg-dark text-gray" style="border: 1px solid var(--pn-border); font-size: 0.7rem; padding: 2px 6px;">
+                      Warnings: <strong class="{{ 'text-danger' if partner.warnings_count >= 3 else 'text-warning' }}">{{ partner.warnings_count }}/3</strong>
+                    </span>
+                  </div>
+
+                  <form method="POST" action="{{ url_for('admin.warn_partner', owner_id=partner.id) }}" class="d-inline me-1">
+                    <button type="submit" class="btn btn-warning btn-sm py-1 px-2 text-dark" style="font-size:0.75rem; font-weight: 500;">
+                      <i class="fa-solid fa-bell"></i> Warn
+                    </button>
+                  </form>
+
+                  {% if partner.warnings_count >= 3 %}
+                  <form method="POST" action="{{ url_for('admin.remove_partner', owner_id=partner.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this partner and all their associated turfs? This action cannot be undone.');">
+                    <button type="submit" class="btn btn-danger btn-sm py-1 px-2 text-white" style="font-size:0.75rem;">
+                      <i class="fa-solid fa-trash-can"></i> Remove
+                    </button>
+                  </form>
+                  {% else %}
+                  <button class="btn btn-pn-outline btn-sm py-1 px-2 text-gray" style="font-size:0.75rem; cursor: not-allowed; opacity: 0.5;" disabled title="Requires 3 warnings first">
+                    <i class="fa-solid fa-trash-can"></i> Locked
+                  </button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+
+            <!-- Audit Document Detail Drawer / Modal Mock (Dynamic per row) -->
+            <tr id="doc-drawer-{{ partner.id }}" class="d-none" style="background: rgba(255,255,255,0.01);">
+              <td colspan="7" class="p-4">
+                <div class="glass p-3" style="border-radius:10px;">
+                  <h6 class="fw-bold mb-3 text-white"><i class="fa-solid fa-shield-halved text-emerald me-2"></i> Documents & Uploads Audit for {{ partner.name }}</h6>
+                  <div class="row g-3">
+                    
+                    <div class="col-md-3">
+                      <div class="small text-gray">Identity Proof</div>
+                      {% if partner.identity_proof %}
+                        {% set id_url = partner.identity_proof if partner.identity_proof.startswith('http') else url_for('static', filename=partner.identity_proof) %}
+                        <a href="{{ id_url }}" target="_blank">
+                          <img src="{{ id_url }}" style="width:100%; height:120px; object-fit:cover; border-radius:6px; border:1px solid var(--pn-border);" alt="Identity Proof">
+                        </a>
+                      {% else %}
+                        <div class="text-gray small italic py-4">No file uploaded</div>
+                      {% endif %}
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="small text-gray">Front Image</div>
+                      {% if partner.front_image %}
+                        {% set front_url = partner.front_image if partner.front_image.startswith('http') else url_for('static', filename=partner.front_image) %}
+                        <a href="{{ front_url }}" target="_blank">
+                          <img src="{{ front_url }}" style="width:100%; height:120px; object-fit:cover; border-radius:6px; border:1px solid var(--pn-border);" alt="Front Image">
+                        </a>
+                      {% else %}
+                        <div class="text-gray small italic py-4">No file uploaded</div>
+                      {% endif %}
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="small text-gray">Ground Images</div>
+                      <div class="d-flex flex-wrap gap-1">
+                        {% for img in partner.ground_images %}
+                          {% set img_url = img if img.startswith('http') else url_for('static', filename=img) %}
+                          <a href="{{ img_url }}" target="_blank">
+                            <img src="{{ img_url }}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid var(--pn-border);">
+                          </a>
+                        {% else %}
+                          <div class="text-gray small italic py-2">No files</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="small text-gray">Night & Lighting</div>
+                      <div class="d-flex flex-wrap gap-1">
+                        {% for img in partner.night_images %}
+                          {% set night_url = img if img.startswith('http') else url_for('static', filename=img) %}
+                          <a href="{{ night_url }}" target="_blank">
+                            <img src="{{ night_url }}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid var(--pn-border);">
+                          </a>
+                        {% else %}
+                          <div class="text-gray small italic py-2">No files</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <p class="text-gray mb-0">No partners registered yet.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function viewDocs(partnerId) {
+    const drawer = document.getElementById('doc-drawer-' + partnerId);
+    if (drawer.classList.contains('d-none')) {
+      drawer.classList.remove('d-none');
+    } else {
+      drawer.classList.add('d-none');
+    }
+  }
+</script>
+{% endblock %}

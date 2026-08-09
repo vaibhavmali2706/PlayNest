@@ -1,0 +1,20 @@
+<aside class="pn-sidebar">
+  <div class="d-flex align-items-center gap-3 mb-4 px-2">
+    <div class="d-flex align-items-center justify-content-center" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#39FF88);color:#0B0F0E;font-weight:700;">
+      {{ session.get('owner_name','O')[0]|upper }}
+    </div>
+    <div>
+      <div class="fw-semibold small">{{ session.get('owner_name','Owner') }}</div>
+      <div class="text-gray" style="font-size:0.75rem;">Owner Portal</div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('owner.dashboard') }}" class="side-link {% if request.endpoint == 'owner.dashboard' %}active{% endif %}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+  <a href="{{ url_for('owner.turfs') }}" class="side-link {% if request.endpoint == 'owner.turfs' %}active{% endif %}"><i class="fa-solid fa-map-location-dot"></i> Manage Turfs</a>
+  <a href="{{ url_for('owner.manage_slots') }}" class="side-link {% if request.endpoint == 'owner.manage_slots' %}active{% endif %}"><i class="fa-solid fa-clock"></i> Manage Slots</a>
+  <a href="{{ url_for('owner.bookings') }}" class="side-link {% if request.endpoint == 'owner.bookings' %}active{% endif %}"><i class="fa-solid fa-ticket"></i> Bookings</a>
+  <a href="{{ url_for('owner.analytics') }}" class="side-link {% if request.endpoint == 'owner.analytics' %}active{% endif %}"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+  <a href="{{ url_for('owner.complaints') }}" class="side-link {% if request.endpoint == 'owner.complaints' %}active{% endif %}"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a>
+  <hr class="divider-fade my-3">
+  <a href="{{ url_for('owner.logout') }}" class="side-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</aside>

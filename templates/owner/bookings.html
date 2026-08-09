@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Bookings — Owner Portal{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Requests</p>
+      <h2>All Bookings</h2>
+    </div>
+
+    {% if bookings %}
+    <div class="surface-navy p-0" style="overflow-x:auto;" data-aos="fade-up">
+      <table class="pn-table">
+        <thead><tr><th>Booking ID</th><th>Turf</th><th>Player</th><th>Date / Time</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td class="text-mono"><a href="{{ url_for('owner.booking_details', booking_id=b.id) }}" class="text-emerald hover-underline fw-semibold">{{ b.id }}</a></td>
+            <td>{{ b.turf_name }}</td>
+            <td>{{ b.player_name }}</td>
+            <td>{{ b.date }} · {{ b.start_time }}–{{ b.end_time }}</td>
+            <td>₹{{ b.price }}</td>
+            <td><span class="badge-pill {{ b.status|status_badge }}">{{ b.status }}</span></td>
+            <td>
+              {% if b.status == "Pending" %}
+              <div class="d-flex gap-2">
+                <form method="POST" action="{{ url_for('owner.approve_booking', booking_id=b.id) }}"><button class="btn btn-pn-primary btn-sm">Approve</button></form>
+                <form method="POST" action="{{ url_for('owner.reject_booking', booking_id=b.id) }}"><button class="btn btn-pn-danger btn-sm">Reject</button></form>
+              </div>
+              {% else %}
+              <span class="text-gray small">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center"><p class="text-gray mb-0">No bookings yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

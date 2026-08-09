@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Owner Partner Sign In — PlayNest{% endblock %}
+{% block content %}
+<section class="auth-shell d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 6rem 1.5rem 3rem 1.5rem; background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);">
+  <div class="container" style="max-width: 480px;">
+    
+    <div class="glass p-4 p-md-5 hover-lift" data-aos="zoom-in" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+      <a href="{{ url_for('auth.login') }}" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 mb-4 hover-emerald" style="transition: color 0.2s;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Player Sign In
+      </a>
+      <div class="text-center mb-4">
+        <a href="{{ url_for('main.landing') }}" class="d-inline-block mb-3">
+          <span style="font-size: 2.2rem; filter: drop-shadow(0 0 10px rgba(59,130,246,0.3));">🏢</span>
+        </a>
+        <h3 class="fw-bold mb-1">Partner Portal Sign In</h3>
+        <p class="text-gray small">Manage your turfs, schedules, bookings, and analytics.</p>
+      </div>
+
+      <form method="POST" novalidate>
+        <!-- Email Input -->
+        <div class="form-group mb-3">
+          <label for="email" class="pn-label">Partner Email Address</label>
+          <input type="email" name="email" id="email" class="pn-input" placeholder="partner@playnest.app" required autofocus>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label for="password" class="pn-label mb-0">Password</label>
+            <a href="{{ url_for('owner.forgot_password') }}" class="text-emerald small fw-semibold" style="font-size: 0.8rem; text-decoration: none;">Forgot Password?</a>
+          </div>
+          <div class="position-relative">
+            <input type="password" name="password" id="password" class="pn-input" placeholder="••••••••" required style="padding-right: 3rem;">
+            <button type="button" class="btn-toggle-password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--pn-gray); cursor: pointer; padding: 0.25rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 10;" tabindex="-1">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-pn-primary btn-block py-3 w-100 fs-6 justify-content-center" style="background: linear-gradient(135deg, var(--pn-blue) 0%, var(--pn-emerald) 100%);">
+          Sign In as Partner <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+        </button>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="text-gray small mb-0">
+          Want to list your sports arena? 
+          <a href="{{ url_for('owner.register') }}" class="text-emerald fw-semibold">Become a Partner</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Seed Info Toast Box (Only for demo purposes) -->
+    <div class="glass mt-4 p-3 text-center" style="border-radius: var(--radius-sm); border-color: rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
+      <p class="text-gray small mb-0" style="font-size: 0.78rem;">
+        <i class="fa-solid fa-circle-info text-emerald me-1"></i> 
+        <strong>Seed Accounts:</strong> 
+        <code>rohanmehta@playnest.app</code> or 
+        <code>ayeshakhan@playnest.app</code> 
+        (Password: <code>password123</code>)
+      </p>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

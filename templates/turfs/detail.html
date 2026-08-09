@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}{{ turf.name }} — PlayNest{% endblock %}
+{% block content %}
+
+<section style="padding-top:6rem;">
+  <!-- Back button -->
+  <div class="container mb-3" data-aos="fade-up">
+    <a href="javascript:history.back()" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 hover-emerald" style="font-weight: 500;">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <!-- Hero -->
+  <div class="position-relative" style="height:52vh;min-height:340px;overflow:hidden;">
+    <img src="{{ turf.hero_image }}" alt="{{ turf.name }}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,15,14,0.15),rgba(11,15,14,0.95));z-index:2;"></div>
+    <div class="container position-absolute start-0 end-0 bottom-0 pb-4" style="z-index:3;">
+      <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+        <div data-aos="fade-up">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            {% if turf.verified %}<span class="badge-pill badge-confirmed"><i class="fa-solid fa-circle-check"></i> Verified</span>{% endif %}
+            <span class="badge-pill" style="background:rgba(255,255,255,0.08);color:#fff;"><i class="fa-solid fa-star text-warning"></i> {{ turf.rating }} ({{ turf.review_count }} reviews)</span>
+          </div>
+          <h1 style="font-size:clamp(1.8rem,4vw,2.8rem);">{{ turf.name }}</h1>
+          <p class="text-gray mb-0"><i class="fa-solid fa-location-dot me-1"></i>{{ turf.area }}, {{ turf.city }}</p>
+        </div>
+        <button class="btn btn-pn-outline {% if turf.id in user_favourite_ids %}active{% endif %}" data-fav-btn="{{ turf.id }}" type="button">
+          <i class="fa-{{ 'solid' if turf.id in user_favourite_ids else 'regular' }} fa-heart {% if turf.id in user_favourite_ids %}text-danger{% endif %}"></i> Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <!-- Gallery -->
+        <div class="row g-2 mb-5" data-aos="fade-up">
+          {% for img in turf.gallery %}
+          <div class="col-4"><img src="{{ img }}" class="w-100" style="height:130px;object-fit:cover;border-radius:14px;" alt="Gallery photo"></div>
+          {% endfor %}
+        </div>
+
+        <!-- Description -->
+        <div class="mb-5" data-aos="fade-up">
+          <h4 class="mb-3">About this turf</h4>
+          <p class="text-gray">{{ turf.description }}</p>
+        </div>
+
+        <!-- Facilities -->
+        <div class="mb-5" data-aos="fade-up">
+          <h4 class="mb-3">Facilities</h4>
+          <div class="row g-3">
+            {% for f, icon in turf.facility_icons.items() %}
+            <div class="col-6 col-md-4">
+              <div class="glass p-3 d-flex align-items-center gap-2">
+                <i class="fa-solid {{ icon }} text-emerald"></i> <span class="small">{{ f }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="mb-5" data-aos="fade-up">
+          <h4 class="mb-3">Player reviews</h4>
+
+          <!-- Add a Review -->
+          <div class="glass p-4 mb-4">
+            <h5 class="mb-3" style="font-size: 1.1rem; color: var(--pn-white);">Write a review</h5>
+            {% if is_logged_in %}
+            <form action="{{ url_for('turfs.add_review', turf_id=turf.id) }}" method="POST">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="pn-label">Rating</label>
+                  <select name="rating" class="pn-select" required>
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                    <option value="3">⭐⭐⭐ (3/5)</option>
+                    <option value="2">⭐⭐ (2/5)</option>
+                    <option value="1">⭐ (1/5)</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="pn-label">Comment</label>
+                  <textarea name="comment" rows="3" class="pn-input" style="height:auto;" placeholder="Share your experience playing at this turf..." required></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-pn-primary btn-sm">Submit Review</button>
+                </div>
+              </div>
+            </form>
+            {% else %}
+            <p class="text-gray small mb-0">
+              Please <a href="{{ url_for('auth.login', next=request.path) }}" class="text-emerald">log in</a> to write a review.
+            </p>
+            {% endif %}
+          </div>
+
+          {% if turf.reviews %}
+            {% for r in turf.reviews %}
+            <div class="surface-navy p-4 mb-3" style="border-radius: var(--radius-sm);">
+              <div class="d-flex justify-content-between mb-2">
+                <strong>{{ r.author }}</strong>
+                <span class="text-warning"><i class="fa-solid fa-star"></i> {{ r.rating }}</span>
+              </div>
+              <p class="text-gray small mb-1">{{ r.comment }}</p>
+              <span class="text-gray" style="font-size:0.75rem;">{{ r.date }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-4 text-gray small">
+              <i class="fa-regular fa-comment-dots mb-2" style="font-size: 1.5rem;"></i>
+              <p class="mb-0">No reviews yet. Be the first to review!</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Complaints Section -->
+        <div class="mb-5" data-aos="fade-up">
+          <div class="glass p-4 border border-danger-subtle" style="border-radius: var(--radius-lg); background: rgba(220, 53, 69, 0.03);">
+            <h5 class="mb-2 text-danger d-flex align-items-center gap-2" style="font-size: 1.1rem;">
+              <i class="fa-solid fa-triangle-exclamation"></i> File a Complaint
+            </h5>
+            <p class="text-gray small mb-3">If you encountered issues with safety, facilities, booking, or behavior at this turf, please file a formal complaint. Your complaint will be private and visible only to the Turf Partner and PlayNest Administrators.</p>
+            
+            {% if is_logged_in %}
+            <form action="{{ url_for('turfs.add_complaint', turf_id=turf.id) }}" method="POST">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="pn-label">Complaint Title / Subject</label>
+                  <input type="text" name="title" class="pn-input" placeholder="e.g. Overcharged, lights off, rude behavior" required>
+                </div>
+                <div class="col-12">
+                  <label class="pn-label">Detailed Description</label>
+                  <textarea name="description" rows="3" class="pn-input" style="height:auto;" placeholder="Please describe the incident or issue in detail..." required></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-danger btn-sm text-white px-3"><i class="fa-solid fa-paper-plane me-1"></i> Submit Complaint</button>
+                </div>
+              </div>
+            </form>
+            {% else %}
+            <p class="text-gray small mb-0">
+              Please <a href="{{ url_for('auth.login', next=request.path) }}" class="text-emerald fw-semibold">log in</a> to place a complaint against this turf.
+            </p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Location Map -->
+        <div data-aos="fade-up" class="mb-5">
+          <h4 class="mb-3">Location & Directions</h4>
+          <div class="glass p-3" style="border-radius: var(--radius-lg);">
+            <div style="width: 100%; height: 280px; border-radius: var(--radius-md); overflow: hidden; position: relative;">
+              {% if turf.lat and turf.lng %}
+              <a href="https://www.google.com/maps/search/?api=1&query={{ turf.lat }},{{ turf.lng }}" target="_blank" class="btn btn-pn-primary btn-sm py-1 px-3 d-flex align-items-center gap-1" style="position: absolute; top: 12px; right: 12px; z-index: 10; font-size: 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <i class="fa-solid fa-map-pin text-white"></i> Open in Maps
+              </a>
+              <iframe 
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                loading="lazy" 
+                allowfullscreen 
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://maps.google.com/maps?q={{ turf.lat }},{{ turf.lng }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
+              </iframe>
+              {% else %}
+              <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-gray">
+                <div class="text-center">
+                  <i class="fa-solid fa-map-location-dot mb-2" style="font-size:2rem;"></i>
+                  <p class="mb-0 small">Location details unavailable</p>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+              <span class="text-gray small"><i class="fa-solid fa-location-dot text-emerald me-1"></i> {{ turf.area }}, {{ turf.city }}</span>
+              {% if turf.lat and turf.lng %}
+              <a href="https://www.google.com/maps/search/?api=1&query={{ turf.lat }},{{ turf.lng }}" target="_blank" class="btn btn-pn-outline btn-sm">
+                <i class="fa-solid fa-diamond-turn-right text-emerald me-1"></i> Get Directions
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Sidebar: booking summary -->
+      <div class="col-lg-4">
+        <div class="surface-navy p-4 p-lg-4" style="position:sticky;top:100px;" data-aos="fade-left">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="turf-price" style="font-size:1.6rem;">₹{{ turf.price_per_hour }}<small>/hour</small></div>
+            <span class="badge-pill {{ 'badge-confirmed' if turf.indoor else 'badge-pending' }}">{{ 'Indoor' if turf.indoor else 'Outdoor' }}</span>
+          </div>
+          <div class="perforation mb-3"></div>
+
+          <div class="pp-field mb-3">
+            <div class="lbl text-gray small">SPORTS AVAILABLE</div>
+            <div class="turf-tags mt-1">{% for s in turf.sports %}<span class="turf-tag">{{ s }}</span>{% endfor %}</div>
+          </div>
+          <div class="pp-field mb-3">
+            <div class="lbl text-gray small">OPENING HOURS</div>
+            <div class="val">{{ turf.opening_hours }}</div>
+          </div>
+          <div class="pp-field mb-4">
+            <div class="lbl text-gray small">OWNER</div>
+            <div class="val">{{ turf.owner_name }}</div>
+          </div>
+
+          <a href="{{ url_for('booking.new_booking', turf_id=turf.id) }}" class="btn btn-pn-primary btn-block">
+            <i class="fa-solid fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

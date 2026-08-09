@@ -1,0 +1,23 @@
+<aside class="pn-sidebar">
+  <div class="d-flex align-items-center gap-3 mb-4 px-2">
+    <div class="d-flex align-items-center justify-content-center" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#39FF88,#10B981);color:#0B0F0E;">
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+    <div>
+      <div class="fw-semibold small">Admin</div>
+      <div class="text-gray" style="font-size:0.75rem;">Control Room</div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('admin.dashboard') }}" class="side-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+  <a href="{{ url_for('admin.users') }}" class="side-link {% if request.endpoint == 'admin.users' %}active{% endif %}"><i class="fa-solid fa-users"></i> Users</a>
+  <a href="{{ url_for('admin.turfs') }}" class="side-link {% if request.endpoint == 'admin.turfs' %}active{% endif %}"><i class="fa-solid fa-map-location-dot"></i> Turfs</a>
+  <a href="{{ url_for('admin.bookings') }}" class="side-link {% if request.endpoint == 'admin.bookings' %}active{% endif %}"><i class="fa-solid fa-ticket"></i> Bookings</a>
+  <a href="{{ url_for('admin.partners') }}" class="side-link {% if request.endpoint == 'admin.partners' %}active{% endif %}"><i class="fa-solid fa-store"></i> Partners</a>
+  <a href="{{ url_for('admin.complaints') }}" class="side-link {% if request.endpoint == 'admin.complaints' %}active{% endif %}"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a>
+  <a href="{{ url_for('admin.flagged_customers') }}" class="side-link {% if request.endpoint == 'admin.flagged_customers' %}active{% endif %}"><i class="fa-solid fa-user-shield"></i> Flagged Customers</a>
+  <a href="{{ url_for('admin.reports') }}" class="side-link {% if request.endpoint == 'admin.reports' %}active{% endif %}"><i class="fa-solid fa-chart-pie"></i> Reports</a>
+
+  <hr class="divider-fade my-3">
+  <a href="{{ url_for('admin.logout') }}" class="side-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</aside>

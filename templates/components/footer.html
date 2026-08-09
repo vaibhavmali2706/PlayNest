@@ -1,0 +1,45 @@
+<footer class="pn-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4 col-6">
+        <a href="{{ url_for('main.landing') }}" class="navbar-brand mb-3 d-inline-flex">
+          <i class="fa-solid fa-circle-play text-emerald"></i> PlayNest<span class="text-neon">.</span>
+        </a>
+        <p class="text-gray small mb-3" style="max-width:280px;">Book. Play. Repeat. The fastest way to find and book premium sports turfs near you.</p>
+        <div class="d-flex gap-2">
+          <a href="#" class="chip"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="chip"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" class="chip"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Platform</h6>
+        <a href="{{ url_for('turfs.listing') }}" class="footer-link">Browse turfs</a>
+        <a href="{{ url_for('main.landing') }}#how-it-works" class="footer-link">How it works</a>
+        <a href="{{ url_for('main.about') }}" class="footer-link">About us</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Business</h6>
+        <a href="{{ url_for('owner.login') }}" class="footer-link">List your turf</a>
+        <a href="{{ url_for('owner.login') }}" class="footer-link">Owner login</a>
+        <a href="{{ url_for('admin.login') }}" class="footer-link">Admin panel</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Support</h6>
+        <a href="{{ url_for('main.contact') }}" class="footer-link">Contact us</a>
+        <a href="#" class="footer-link">Help centre</a>
+        <a href="#" class="footer-link">Cancellation policy</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Legal</h6>
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Privacy</a>
+      </div>
+    </div>
+    <hr class="divider-fade my-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center text-gray small">
+      <span>© {{ current_year }} PlayNest. All rights reserved.</span>
+      <span>Made for players, by players. 🟢</span>
+    </div>
+  </div>
+</footer>

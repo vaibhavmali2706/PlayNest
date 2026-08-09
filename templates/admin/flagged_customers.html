@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block title %}Flagged Customers — Admin Room{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-1">Safety & Compliance</p>
+        <h2>Flagged Customer Reports</h2>
+      </div>
+    </div>
+
+    {% if flagged %}
+    <div class="row g-4">
+      {% for f in flagged %}
+      <div class="col-12" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+        <div class="surface-navy p-4 hover-lift" style="border-radius: var(--radius-md); border-left: 4px solid {% if f.owners_count > 1 %}var(--pn-danger){% else %}var(--pn-warning){% endif %};">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <h4 class="mb-0 text-white fw-bold">{{ f.user_name }}</h4>
+                <span class="badge-pill py-1 px-2 {% if f.user_status == 'active' %}bg-success-subtle text-success{% elif f.user_status == 'suspended' %}bg-warning-subtle text-warning{% else %}bg-danger-subtle text-danger{% endif %}" style="font-size:0.7rem; border-radius:4px;">
+                  Status: {{ f.user_status|upper }}
+                  {% if f.user_status == 'suspended' and f.suspension_until %}
+                    (until {{ f.suspension_until.strftime('%Y-%m-%d') }})
+                  {% endif %}
+                </span>
+                {% if f.owners_count > 1 %}
+                  <span class="badge-pill bg-danger-subtle text-danger" style="font-size:0.7rem; border-radius:4px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Flagged: Multiple Owners
+                  </span>
+                {% endif %}
+              </div>
+              <p class="text-gray small mb-0">Email: <strong>{{ f.user_email }}</strong> · Phone: <strong>{{ f.user_phone }}</strong> · User ID: <code>{{ f.user_id }}</code></p>
+            </div>
+            <div class="text-end">
+              <span class="text-gray small d-block">Warnings Issued: <strong class="text-white">{{ f.warnings_count }}</strong></span>
+              <span class="text-gray small d-block">Active Restrictions: <strong class="text-neon">{{ f.active_restrictions_count }} turf(s)</strong></span>
+            </div>
+          </div>
+
+          <hr class="divider-fade my-3">
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <span class="pn-label">Reporting Owners & Turfs</span>
+              <p class="small text-white mb-0" style="line-height:1.5;">{{ f.owners_list }}</p>
+            </div>
+            <div class="col-md-6">
+              <span class="pn-label">Reasons Reported</span>
+              <p class="small text-warning mb-0">{{ f.reasons_list }}</p>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <button class="btn btn-pn-outline btn-sm py-1 px-3" onclick="openDetailsModal('{{ f.user_name }}', {{ f.reports|tojson|safe if f.reports else '[]' }})">
+                <i class="fa-solid fa-list me-1"></i> View Report Logs ({{ f.reports_count }})
+              </button>
+            </div>
+
+            <div class="d-flex gap-2">
+              {% if f.user_status == 'active' %}
+                <!-- Warn action -->
+                <form method="POST" action="{{ url_for('admin.flagged_customer_action', user_id=f.user_id) }}">
+                  <input type="hidden" name="action" value="warning">
+                  <button type="submit" class="btn btn-pn-outline btn-sm py-1 px-3">
+                    <i class="fa-solid fa-bullhorn me-1 text-warning"></i> Issue Warning
+                  </button>
+                </form>
+                
+                <!-- Suspend action -->
+                <button type="button" class="btn btn-pn-outline btn-sm py-1 px-3" onclick="openSuspendModal('{{ f.user_id }}', '{{ f.user_name }}')">
+                  <i class="fa-solid fa-hourglass-half me-1 text-primary"></i> Suspend
+                </button>
+                
+                <!-- Ban action -->
+                <form method="POST" action="{{ url_for('admin.flagged_customer_action', user_id=f.user_id) }}" onsubmit="return confirm('Are you sure you want to PERMANENTLY BAN {{ f.user_name }} from the entire platform?');">
+                  <input type="hidden" name="action" value="ban">
+                  <button type="submit" class="btn btn-pn-danger btn-sm py-1 px-3">
+                    <i class="fa-solid fa-user-xmark me-1"></i> Ban Account
+                  </button>
+                </form>
+              {% else %}
+                <!-- Restore action -->
+                <form method="POST" action="{{ url_for('admin.flagged_customer_action', user_id=f.user_id) }}">
+                  <input type="hidden" name="action" value="restore">
+                  <button type="submit" class="btn btn-pn-primary btn-sm py-1 px-3" style="background: var(--pn-emerald); color: var(--pn-charcoal);">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Restore Account
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center" data-aos="fade-up">
+      <i class="fa-solid fa-shield-halved text-emerald mb-3" style="font-size:2.5rem;"></i>
+      <h5>All Clean!</h5>
+      <p class="text-gray small mb-0">No customers have been reported by turf owners. The ecosystem is running smoothly.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Report Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content glass text-white" style="border: 1px solid var(--pn-border); background: rgba(15, 23, 42, 0.95); border-radius: var(--radius-lg);">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold text-white mb-1" id="modalCustomerName">Report Logs</h5>
+          <p class="text-gray small mb-0">Full history of incident complaints</p>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3" style="max-height: 400px; overflow-y: auto;">
+        <div class="d-flex flex-column gap-3" id="reportsListContainer">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-pn-outline btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Suspend Choice Modal -->
+<div class="modal fade" id="suspendModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass text-white" style="border: 1px solid var(--pn-border); background: rgba(15, 23, 42, 0.95); border-radius: var(--radius-lg);">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold text-white mb-1">Temporary Account Suspension</h5>
+          <p class="text-gray small mb-0" id="suspendModalUserName">Player: --</p>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <form id="suspendForm" method="POST" action="">
+          <input type="hidden" name="action" value="suspend">
+          
+          <label class="pn-label mb-2">Select Suspension Duration</label>
+          <div class="d-flex flex-column gap-2 mb-4">
+            {% for value, label in [
+              ('3', '3 Days Suspension'),
+              ('7', '7 Days Suspension (Standard)'),
+              ('14', '14 Days Suspension'),
+              ('30', '30 Days Suspension')
+            ] %}
+              <label class="d-flex align-items-center gap-3 p-2 rounded hover-emerald" style="cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid var(--pn-border); transition: all 0.2s;">
+                <input type="radio" name="suspension_days" value="{{ value }}" {% if value == '7' %}checked{% endif %} style="accent-color: var(--pn-emerald); width: 18px; height: 18px;">
+                <span class="small fw-medium">{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end border-top border-secondary pt-3">
+            <button type="button" class="btn btn-pn-outline btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-pn-primary btn-sm btn-pn-danger" style="background: rgba(251,191,36,0.22); border-color: rgba(251,191,36,0.4); color: var(--pn-warning);">Confirm Suspension</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+  let detailsModalInstance;
+  let suspendModalInstance;
+
+  function openDetailsModal(userName, reports) {
+    document.getElementById('modalCustomerName').innerText = `Report Logs: ${userName}`;
+    const container = document.getElementById('reportsListContainer');
+    container.innerHTML = '';
+
+    const reasonMap = {
+      'rude_behaviour': 'Rude Behaviour',
+      'damaged_property': 'Damaged Property',
+      'repeated_late_arrival': 'Repeated Late Arrival',
+      'no_show': 'No Show',
+      'violated_turf_rules': 'Violated Turf Rules',
+      'other': 'Other'
+    };
+
+    if (reports.length === 0) {
+      container.innerHTML = '<p class="text-gray italic text-center">No report details available.</p>';
+    } else {
+      reports.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'surface-navy p-3';
+        div.style.borderRadius = 'var(--radius-sm)';
+        div.style.borderLeft = '3px solid var(--pn-danger)';
+        
+        // Handle dates safely
+        const dateStr = r.created_at ? r.created_at.substring(0, 19).replace('T', ' ') : 'Just now';
+        
+        div.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge-pill bg-danger-subtle text-danger" style="font-size:0.7rem;">
+              Reason: ${reasonMap[r.reason] || r.reason}
+            </span>
+            <span class="text-gray-dim small">${dateStr}</span>
+          </div>
+          <p class="text-gray small mb-2">${r.description || 'No additional details provided.'}</p>
+          <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2">
+            <span class="text-gray-dim" style="font-size:0.7rem;">Owner ID: <code>${r.owner_id}</code></span>
+            <span class="text-gray-dim" style="font-size:0.7rem;">Booking ID: <code>${r.booking_id}</code></span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    if (!detailsModalInstance) {
+      detailsModalInstance = new bootstrap.Modal(document.getElementById('detailsModal'));
+    }
+    detailsModalInstance.show();
+  }
+
+  function openSuspendModal(userId, userName) {
+    document.getElementById('suspendModalUserName').innerText = `Player: ${userName}`;
+    
+    // Dynamically set form action
+    const form = document.getElementById('suspendForm');
+    form.action = `/admin/flagged-customers/${userId}/action`;
+    
+    if (!suspendModalInstance) {
+      suspendModalInstance = new bootstrap.Modal(document.getElementById('suspendModal'));
+    }
+    suspendModalInstance.show();
+  }
+</script>
+{% endblock %}
+{% endblock %}

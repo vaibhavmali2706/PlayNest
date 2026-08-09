@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Create Account — PlayNest{% endblock %}
+{% block content %}
+<section class="auth-shell d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 6rem 1.5rem 3rem 1.5rem; background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);">
+  <div class="container" style="max-width: 520px;">
+    
+    <div class="glass p-4 p-md-5 hover-lift" data-aos="zoom-in" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+      <a href="{{ url_for('auth.login') }}" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 mb-4 hover-emerald" style="transition: color 0.2s;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Login
+      </a>
+      <div class="text-center mb-4">
+        <a href="{{ url_for('main.landing') }}" class="d-inline-block mb-2">
+          <span style="font-size: 2.2rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.3));">🟢</span>
+        </a>
+        <h3 class="fw-bold mb-1">Create Your Account</h3>
+        <p class="text-gray small">Join PlayNest and start booking turfs instantly.</p>
+      </div>
+
+      <form method="POST" novalidate id="signupForm">
+        {{ form.hidden_tag() }}
+
+        <!-- Full Name -->
+        <div class="form-group mb-3">
+          <label for="name" class="pn-label">Full Name</label>
+          {{ form.name(class="pn-input" + (" is-invalid" if form.name.errors else ""), placeholder="don joeseph") }}
+          {% if form.name.errors %}
+            {% for err in form.name.errors %}
+              <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Email Address -->
+        <div class="form-group mb-3">
+          <label for="email" class="pn-label">Email Address</label>
+          {{ form.email(class="pn-input" + (" is-invalid" if form.email.errors else ""), placeholder="joseph@example.com") }}
+          {% if form.email.errors %}
+            {% for err in form.email.errors %}
+              <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Mobile & City Grid -->
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label for="phone" class="pn-label">Mobile Number</label>
+            {{ form.phone(class="pn-input" + (" is-invalid" if form.phone.errors else ""), placeholder="9876543210") }}
+            {% if form.phone.errors %}
+              {% for err in form.phone.errors %}
+                <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label for="city" class="pn-label">City</label>
+            <select name="city" id="city" class="pn-select {% if form.city.errors %}is-invalid{% endif %}">
+              <option value="">Select City</option>
+              {% for city in cities %}
+                <option value="{{ city }}" {% if form.city.data == city %}selected{% endif %}>{{ city }}</option>
+              {% endfor %}
+            </select>
+            {% if form.city.errors %}
+              {% for err in form.city.errors %}
+                <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group mb-3">
+          <label for="password" class="pn-label">Password</label>
+          <div class="position-relative">
+            {{ form.password(class="pn-input" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••", id="passwordField", style="padding-right: 3rem;") }}
+            <button type="button" class="btn-toggle-password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--pn-gray); cursor: pointer; padding: 0.25rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 10;" tabindex="-1">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          
+          <!-- Password Strength Indicator -->
+          <div class="mt-2" id="strengthContainer">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small text-gray">Password strength:</span>
+              <span class="small fw-semibold" id="strengthText" style="color: var(--pn-gray-dim);">Too short</span>
+            </div>
+            <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden;">
+              <div class="progress-bar" id="strengthBar" role="progressbar" style="width: 0%; background-color: var(--pn-gray-dim); transition: all 0.3s ease;"></div>
+            </div>
+          </div>
+
+          {% if form.password.errors %}
+            {% for err in form.password.errors %}
+              <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group mb-4">
+          <label for="confirm_password" class="pn-label">Confirm Password</label>
+          <div class="position-relative">
+            {{ form.confirm_password(class="pn-input" + (" is-invalid" if form.confirm_password.errors else ""), placeholder="••••••••", style="padding-right: 3rem;") }}
+            <button type="button" class="btn-toggle-password" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--pn-gray); cursor: pointer; padding: 0.25rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 10;" tabindex="-1">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          {% if form.confirm_password.errors %}
+            {% for err in form.confirm_password.errors %}
+              <div class="invalid-feedback d-block mt-2" style="font-size: 0.8rem; color: var(--pn-danger);"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ err }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-pn-primary btn-block py-3 w-100 fs-6 justify-content-center">
+          Register & Verify <i class="fa-solid fa-paper-plane ms-2"></i>
+        </button>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="text-gray small mb-0">
+          Already have an account? 
+          <a href="{{ url_for('auth.login') }}" class="text-emerald fw-semibold">Sign In</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('passwordField');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+
+    if (passwordInput) {
+      passwordInput.addEventListener('input', function() {
+        const val = passwordInput.value;
+        let score = 0;
+        
+        if (val.length >= 8) score += 1;
+        if (val.match(/[a-z]/)) score += 1;
+        if (val.match(/[A-Z]/)) score += 1;
+        if (val.match(/[0-9]/)) score += 1;
+        
+        let pct = 0;
+        let color = 'var(--pn-gray-dim)';
+        let text = 'Too short';
+
+        if (val.length === 0) {
+          pct = 0;
+          text = 'Empty';
+        } else if (val.length < 8) {
+          pct = 25;
+          color = 'var(--pn-danger)';
+          text = 'Weak (min 8 chars)';
+        } else {
+          if (score === 2) {
+            pct = 50;
+            color = 'var(--pn-warning)';
+            text = 'Medium';
+          } else if (score === 3) {
+            pct = 75;
+            color = 'var(--pn-warning)';
+            text = 'Medium';
+          } else if (score === 4) {
+            pct = 100;
+            color = 'var(--pn-emerald)';
+            text = 'Strong';
+          } else {
+            pct = 25;
+            color = 'var(--pn-danger)';
+            text = 'Weak';
+          }
+        }
+
+        strengthBar.style.width = pct + '%';
+        strengthBar.style.backgroundColor = color;
+        strengthText.innerText = text;
+        strengthText.style.color = color;
+      });
+    }
+  });
+</script>
+{% endblock %}
+{% endblock %}

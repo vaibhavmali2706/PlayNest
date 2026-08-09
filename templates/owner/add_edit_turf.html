@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Turf — PlayNest Partner{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  
+  <!-- Sidebar -->
+  <aside class="pn-sidebar">
+    <div class="d-flex align-items-center gap-3 mb-4 px-2">
+      <div class="d-flex align-items-center justify-content-center" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#10B981);color:#ffffff;font-weight:700;">
+        {{ session.get('owner_name','P')[0]|upper }}
+      </div>
+      <div>
+        <div class="fw-semibold small">{{ session.get('owner_name','Partner') }}</div>
+        <div class="text-gray" style="font-size:0.75rem;">Verified Partner</div>
+      </div>
+    </div>
+    <a href="{{ url_for('owner.dashboard') }}" class="side-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+    <a href="{{ url_for('owner.turfs') }}" class="side-link active"><i class="fa-solid fa-circle-play"></i> My Turfs</a>
+    <a href="{{ url_for('owner.bookings') }}" class="side-link"><i class="fa-solid fa-ticket"></i> Bookings</a>
+    <a href="{{ url_for('owner.analytics') }}" class="side-link"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
+    <hr class="divider-fade my-3">
+    <a href="{{ url_for('owner.logout') }}" class="side-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  </aside>
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ url_for('owner.turfs') }}" class="text-emerald small text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back to Turfs</a>
+      </div>
+      <h2 class="fw-bold mt-2">{{ action }} Sports Arena 🟢</h2>
+      <p class="text-gray small">Fill in the turf details, select sports, and set up your pricing and amenities.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+      <div class="row g-4">
+        
+        <!-- Left Column: Details -->
+        <div class="col-lg-8" data-aos="fade-up">
+          <div class="glass p-4 mb-4" style="border-radius: var(--radius-md);">
+            <h5 class="fw-bold mb-4"><i class="fa-solid fa-list-check text-emerald me-2"></i> Basic Details</h5>
+            
+            <div class="form-group mb-3">
+              <label class="pn-label">Turf/Arena Name</label>
+              <input type="text" name="name" class="pn-input" value="{{ turf.name if turf else '' }}" placeholder="e.g. Royal Box Cricket" required>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-sm-6">
+                <label class="pn-label">City</label>
+                <input type="text" name="city" class="pn-input" value="{{ turf.city if turf else '' }}" placeholder="e.g. Kolhapur" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="pn-label">Area / Locality</label>
+                <input type="text" name="area" class="pn-input" value="{{ turf.area if turf else '' }}" placeholder="e.g. Rankala" required>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="pn-label">Description</label>
+              <textarea name="description" class="pn-input" rows="4" placeholder="Briefly describe your turf, facilities, and unique features..." required>{{ turf.description if turf else '' }}</textarea>
+            </div>
+          </div>
+
+          <!-- Sports & Facilities Selection -->
+          <div class="glass p-4 mb-4" style="border-radius: var(--radius-md);">
+            <h5 class="fw-bold mb-4"><i class="fa-solid fa-basketball text-emerald me-2"></i> Sports & Amenities</h5>
+            
+            <!-- Sport Tags Checkboxes -->
+            <div class="mb-4">
+              <label class="pn-label mb-2">Select Sports Available</label>
+              <div class="d-flex flex-wrap gap-2">
+                {% for sport in ['Football', 'Cricket', 'Box Cricket', 'Badminton', 'Basketball', 'Pickleball'] %}
+                <label class="btn btn-pn-outline btn-sm d-flex align-items-center gap-2" style="cursor:pointer; border-radius:10px; padding:0.6rem 1rem;">
+                  <input type="checkbox" name="sports" value="{{ sport }}" style="transform: scale(1.1);"
+                         {% if turf and sport in turf.sports %}checked{% endif %}>
+                  <span>{{ sport }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Facilities Checkboxes -->
+            <div class="mb-4">
+              <label class="pn-label mb-2">Amenities & Facilities Offered</label>
+              <div class="row g-2">
+                {% for facility in ['Parking', 'Washroom', 'Changing Room', 'Locker', 'Cafe', 'WiFi', 'Flood Lights', 'Drinking Water', 'CCTV'] %}
+                <div class="col-6 col-sm-4">
+                  <label class="d-flex align-items-center gap-2 text-gray small py-2 px-3 glass" style="border-radius:8px; cursor:pointer;">
+                    <input type="checkbox" name="facilities" value="{{ facility }}" 
+                           {% if turf and facility in turf.facilities %}checked{% endif %}>
+                    <span>{{ facility }}</span>
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="pn-label">Turf Layout Type</label>
+                <select name="indoor" class="pn-select">
+                  <option value="false" {% if turf and not turf.indoor %}selected{% endif %}>Outdoor (Open-Air / Canopy)</option>
+                  <option value="true" {% if turf and turf.indoor %}selected{% endif %}>Indoor (Acoustic Hall / Arena)</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="pn-label">Pricing (₹ per Hour)</label>
+                <input type="number" name="price_per_hour" class="pn-input" value="{{ turf.price_per_hour if turf else '' }}" placeholder="e.g. 1200" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hours & Location -->
+          <div class="glass p-4 mb-4" style="border-radius: var(--radius-md);">
+            <h5 class="fw-bold mb-4"><i class="fa-solid fa-map-location-dot text-emerald me-2"></i> Scheduling & Location</h5>
+            
+            <div class="row g-3 mb-4">
+              <div class="col-sm-6">
+                <label class="pn-label">Opening & Closing Hours</label>
+                <input type="text" name="opening_hours" class="pn-input" value="{{ turf.opening_hours if turf else '06:00 AM - 11:00 PM' }}" placeholder="e.g. 06:00 AM - 11:00 PM" required>
+              </div>
+              <div class="col-sm-3">
+                <label class="pn-label">Latitude</label>
+                <input type="number" step="any" name="lat" class="pn-input" value="{{ turf.lat if turf else '' }}" placeholder="e.g. 16.69">
+              </div>
+              <div class="col-sm-3">
+                <label class="pn-label">Longitude</label>
+                <input type="number" step="any" name="lng" class="pn-input" value="{{ turf.lng if turf else '' }}" placeholder="e.g. 74.22">
+              </div>
+            </div>
+            <p class="text-gray small mb-0"><i class="fa-solid fa-circle-info"></i> Latitude and longitude coordinates help compute dynamic distances for players using browser geolocation.</p>
+          </div>
+        </div>
+
+        <!-- Right Column: Media Uploads -->
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="glass p-4 h-100" style="border-radius: var(--radius-md);">
+            <h5 class="fw-bold mb-4"><i class="fa-solid fa-images text-emerald me-2"></i> Media & Images</h5>
+            
+            <!-- Cover image -->
+            <div class="mb-4">
+              <label class="pn-label mb-2">Arena Main Cover Image</label>
+              {% if turf and turf.hero_image %}
+                <img src="{{ turf.hero_image }}" class="w-100 mb-2" style="height:120px; object-fit:cover; border-radius:10px;" id="currentCover">
+              {% endif %}
+              <input type="file" name="cover_image" class="pn-input" accept="image/*" {% if not turf %}required{% endif %} onchange="previewMediaSingle(this, 'coverPreview')">
+              <div class="img-preview-box mt-2 d-none" id="coverPreview"></div>
+            </div>
+
+            <!-- Gallery Images -->
+            <div class="mb-4">
+              <label class="pn-label mb-2">Gallery Images (Unlimited)</label>
+              {% if turf and turf.gallery %}
+                <div class="img-previews-grid mb-2">
+                  {% for img in turf.gallery %}
+                    <img src="{{ img }}" style="width:100%; height:50px; object-fit:cover; border-radius:5px;">
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <input type="file" name="gallery_images" class="pn-input" accept="image/*" multiple onchange="previewMediaMultiple(this, 'galleryPreviews')">
+              <div class="img-previews-grid mt-2" id="galleryPreviews"></div>
+            </div>
+
+            <button type="submit" class="btn btn-pn-primary btn-block py-3 mt-5 w-100 fs-6 justify-content-center" style="background: linear-gradient(135deg, var(--pn-blue) 0%, var(--pn-emerald) 100%);">
+              Save Arena Details <i class="fa-solid fa-circle-check ms-2"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<style>
+  .img-preview-box img {
+    width: 100%;
+    max-height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .img-previews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 0.5rem;
+  }
+  .img-previews-grid img {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function previewMediaSingle(input, previewId) {
+    const box = document.getElementById(previewId);
+    box.innerHTML = "";
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        box.appendChild(img);
+        box.classList.remove("d-none");
+      };
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      box.classList.add("d-none");
+    }
+  }
+
+  function previewMediaMultiple(input, gridId) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = "";
+    if (input.files) {
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          grid.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+</script>
+{% endblock %}
+

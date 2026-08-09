@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — PlayNest{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Platform overview</p>
+      <h2>PlayNest Control Room</h2>
+    </div>
+
+    <div class="row g-3 mb-5">
+      {% for label, val, icon in [
+        ("Users", stats.users, "fa-users"),
+        ("Owners", stats.owners, "fa-store"),
+        ("Turfs", stats.turfs, "fa-map-location-dot"),
+        ("Bookings", stats.bookings, "fa-ticket"),
+        ("Cities", stats.cities, "fa-city"),
+        ("Sports", stats.sports, "fa-futbol"),
+        ("Revenue", "₹" ~ stats.revenue, "fa-sack-dollar"),
+        ("Pending", stats.pending, "fa-hourglass-half"),
+      ] %}
+      <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 40 }}">
+        <div class="surface-navy stat-card hover-lift">
+          <div class="icon"><i class="fa-solid {{ icon }}"></i></div>
+          <div class="stat-number" style="font-size:1.5rem;">{{ val }}</div>
+          <div class="text-gray small">{{ label }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-7" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Recent bookings</h5>
+          <a href="{{ url_for('admin.bookings') }}" class="text-emerald small">View all <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        {% if recent_bookings %}
+        <div class="surface-navy p-0" style="overflow-x:auto;">
+          <table class="pn-table">
+            <thead><tr><th>ID</th><th>Turf</th><th>City</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for b in recent_bookings %}
+              <tr><td class="text-mono">{{ b.id }}</td><td>{{ b.turf_name }}</td><td>{{ b.turf_city }}</td><td><span class="badge-pill {{ b.status|status_badge }}">{{ b.status }}</span></td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="glass p-4 text-center"><p class="text-gray mb-0">No bookings yet.</p></div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Recently listed turfs</h5>
+          <a href="{{ url_for('admin.turfs') }}" class="text-emerald small">View all <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        {% for turf in turfs %}
+        <div class="surface-navy p-3 mb-2 d-flex align-items-center gap-3">
+          <img src="{{ turf.hero_image }}" style="width:56px;height:48px;object-fit:cover;border-radius:10px;" alt="{{ turf.name }}">
+          <div class="flex-grow-1">
+            <div class="small fw-semibold">{{ turf.name }}</div>
+            <div class="text-gray" style="font-size:0.75rem;">{{ turf.city }}</div>
+          </div>
+          <span class="badge-pill badge-confirmed">Active</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

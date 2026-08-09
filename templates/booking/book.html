@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Book {{ turf.name }} — PlayNest{% endblock %}
+{% block content %}
+
+<section style="padding:8rem 0 4rem;">
+  <div class="container" data-booking-root data-turf-id="{{ turf.id }}" data-price="{{ turf.price_per_hour }}" data-preselect-date="{{ preselect_date }}" data-sports='{{ turf.sports|tojson }}'>
+
+    <!-- Back button -->
+    <div class="mb-3" data-aos="fade-up">
+      <a href="{{ url_for('turfs.detail', turf_id=turf.id) }}" class="text-gray text-decoration-none small d-inline-flex align-items-center gap-2 hover-emerald" style="font-weight: 500;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Turf Details
+      </a>
+    </div>
+
+    <div class="mb-4 d-flex justify-content-between align-items-end" data-aos="fade-up">
+      <div>
+        <p class="eyebrow mb-2">Book a slot</p>
+        <h1 style="font-size:clamp(1.6rem,3.2vw,2.4rem);">{{ turf.name }}</h1>
+        <p class="text-gray small mb-0"><i class="fa-solid fa-location-dot me-1"></i>{{ turf.area }}, {{ turf.city }}</p>
+      </div>
+      <button class="btn btn-pn-outline {% if turf.id in user_favourite_ids %}active{% endif %}" data-fav-btn="{{ turf.id }}" type="button">
+        <i class="fa-{{ 'solid' if turf.id in user_favourite_ids else 'regular' }} fa-heart {% if turf.id in user_favourite_ids %}text-danger{% endif %}"></i> Save
+      </button>
+    </div>
+
+    <form method="POST" action="{{ url_for('booking.confirm', turf_id=turf.id) }}" id="bookingForm">
+      <div class="row g-4">
+        <div class="col-lg-8">
+
+          <!-- Sport & Duration -->
+          <div class="glass p-4 mb-4" data-aos="fade-up">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="pn-label">Sport</label>
+                <select id="sportSelect" name="sport" class="pn-select">
+                  {% for s in turf.sports %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="pn-label">Duration</label>
+                <select id="durationSelect" name="duration" class="pn-select">
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="3">3 hours</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="pn-label">Player name (for the PlayPass)</label>
+                <input class="pn-input" name="player_name" value="{{ session.get('user_name', '') }}" placeholder="Full name">
+              </div>
+            </div>
+          </div>
+
+          <!-- Date picker -->
+          <div class="glass p-4 mb-4" data-aos="fade-up">
+            <label class="pn-label mb-3">Choose date</label>
+            <div class="d-flex gap-2 flex-wrap">
+              {% for d in dates %}
+              <div class="date-chip {% if d.strftime('%Y-%m-%d') == preselect_date %}selected{% endif %}" data-date="{{ d.strftime('%Y-%m-%d') }}">
+                <div class="dow">{{ d.strftime('%a') }}</div>
+                <div class="dnum">{{ d.strftime('%d') }}</div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Slot picker -->
+          <div class="glass p-4" data-aos="fade-up">
+            <label class="pn-label mb-3">Choose time slot</label>
+            <div class="slot-grid" id="slotGrid"></div>
+            <div class="d-flex gap-3 mt-3 text-gray small">
+              <span><span class="chip"></span> <span class="d-inline-block" style="width:10px;height:10px;background:rgba(255,255,255,0.15);border-radius:3px;"></span> Available</span>
+              <span><span class="d-inline-block" style="width:10px;height:10px;background:linear-gradient(135deg,#10B981,#39FF88);border-radius:3px;"></span> Selected</span>
+              <span><span class="d-inline-block" style="width:10px;height:10px;background:rgba(255,255,255,0.06);border-radius:3px;"></span> Booked</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="col-lg-4">
+          <div class="surface-navy p-4" style="position:sticky;top:100px;" data-aos="fade-left">
+            <h5 class="mb-3">Booking Summary</h5>
+            <div id="bookingSummary"></div>
+            <input type="hidden" name="date" id="hiddenDate">
+            <input type="hidden" name="start_time" id="hiddenSlot">
+            <button type="submit" id="confirmBtn" class="btn btn-pn-primary btn-block mt-4" disabled>
+              <i class="fa-solid fa-check"></i> Confirm Booking
+            </button>
+            <p class="text-gray small text-center mt-3 mb-0">Free cancellation up to 3 hours before your slot.</p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

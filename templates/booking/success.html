@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmed — PlayNest{% endblock %}
+{% block content %}
+
+<section class="auth-shell">
+  <div class="text-center" style="max-width:520px;width:100%;" data-aos="zoom-in">
+    <div class="success-check mb-4">
+      <i class="fa-solid fa-circle-check text-emerald" style="font-size:4.5rem;"></i>
+    </div>
+    <h2 class="mb-2">Booking Confirmed!</h2>
+    <p class="text-gray mb-4">Your slot at <strong>{{ booking.turf_name }}</strong> is locked in. Your PlayPass is ready.</p>
+
+    <!-- Save to favorites option -->
+    <div class="mb-4">
+      <button class="btn btn-pn-outline btn-sm {% if turf_id in user_favourite_ids %}active{% endif %}" data-fav-btn="{{ turf_id }}" type="button">
+        <i class="fa-{{ 'solid' if turf_id in user_favourite_ids else 'regular' }} fa-heart {% if turf_id in user_favourite_ids %}text-danger{% endif %}"></i> Save Turf to Favourites
+      </button>
+    </div>
+
+    <div class="surface-navy p-4 text-start mb-4">
+      <div class="d-flex justify-content-between mb-2"><span class="text-gray small">Booking ID</span><span class="text-mono text-neon">{{ booking.id }}</span></div>
+      <div class="d-flex justify-content-between mb-2"><span class="text-gray small">Sport</span><span>{{ booking.sport }}</span></div>
+      <div class="d-flex justify-content-between mb-2"><span class="text-gray small">Date</span><span>{{ booking.date }}</span></div>
+      <div class="d-flex justify-content-between mb-2"><span class="text-gray small">Time</span><span>{{ booking.start_time }} – {{ booking.end_time }}</span></div>
+      <div class="d-flex justify-content-between"><span class="text-gray small">Status</span><span class="badge-pill {{ booking.status|status_badge }}">{{ booking.status }}</span></div>
+    </div>
+
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{{ url_for('booking.playpass', booking_id=booking.id) }}" class="btn btn-pn-primary"><i class="fa-solid fa-ticket"></i> View PlayPass</a>
+      <a href="{{ url_for('dashboard.home') }}" class="btn btn-pn-outline">Go to Dashboard</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  if (window.gsap) {
+    gsap.from(".success-check", { scale: 0, opacity: 0, duration: 0.6, ease: "back.out(2)" });
+  }
+</script>
+{% endblock %}

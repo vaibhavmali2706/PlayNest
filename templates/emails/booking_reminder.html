@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#0B0F0E;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0F0E;padding:40px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#101B2D;border-radius:20px;overflow:hidden;">
+        <tr><td style="background:linear-gradient(135deg,#3B82F6,#39FF88);padding:28px;text-align:center;">
+          <span style="font-size:22px;font-weight:bold;color:#0B0F0E;">Game time is coming up ⏰</span>
+        </td></tr>
+        <tr><td style="padding:36px 40px;color:#FFFFFF;">
+          <p style="color:#A3AAB8;font-size:15px;">Hi {{ booking.player_name }}, this is a reminder for your upcoming game:</p>
+          <table width="100%" style="margin-top:20px;color:#FFFFFF;font-size:14px;">
+            <tr><td style="padding:8px 0;color:#6B7484;">Turf</td><td style="text-align:right;">{{ booking.turf_name }}</td></tr>
+            <tr><td style="padding:8px 0;color:#6B7484;">Location</td><td style="text-align:right;">{{ booking.turf_area }}, {{ booking.turf_city }}</td></tr>
+            <tr><td style="padding:8px 0;color:#6B7484;">Date</td><td style="text-align:right;">{{ booking.date }}</td></tr>
+            <tr><td style="padding:8px 0;color:#6B7484;">Time</td><td style="text-align:right;">{{ booking.start_time }} – {{ booking.end_time }}</td></tr>
+          </table>
+          <p style="color:#6B7484;font-size:13px;margin-top:24px;">Don't forget to bring your PlayPass. See you on the turf!</p>
+        </td></tr>
+        <tr><td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.08);color:#6B7484;font-size:12px;">
+          PlayNest · support@playnest.app
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

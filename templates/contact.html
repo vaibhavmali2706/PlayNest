@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Contact — PlayNest{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:8rem;">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5" data-aos="fade-right">
+        <p class="eyebrow mb-2">Get in touch</p>
+        <h1 class="mb-4" style="font-size:clamp(1.8rem,3.5vw,2.6rem);">We'd love to hear from you</h1>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="feature-icon"><i class="fa-solid fa-envelope"></i></div>
+          <div><h6 class="mb-1">Email</h6><p class="text-gray mb-0">support@playnest.app</p></div>
+        </div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="feature-icon"><i class="fa-solid fa-phone"></i></div>
+          <div><h6 class="mb-1">Phone</h6><p class="text-gray mb-0">+91 90000 00000</p></div>
+        </div>
+        <div class="d-flex align-items-start gap-3">
+          <div class="feature-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div><h6 class="mb-1">Head Office</h6><p class="text-gray mb-0">Kolhapur, Maharashtra, India</p></div>
+        </div>
+      </div>
+      <div class="col-lg-7" data-aos="fade-left">
+        <form class="glass p-4 p-md-5">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="pn-label">Full name</label><input class="pn-input" placeholder="Your name"></div>
+            <div class="col-md-6"><label class="pn-label">Email</label><input type="email" class="pn-input" placeholder="you@email.com"></div>
+            <div class="col-12"><label class="pn-label">Message</label><textarea class="pn-input" rows="5" placeholder="How can we help?"></textarea></div>
+            <div class="col-12"><button type="submit" class="btn btn-pn-primary">Send Message <i class="fa-solid fa-paper-plane"></i></button></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

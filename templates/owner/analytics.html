@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Analytics — Owner Portal{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/owner_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">Insights</p>
+      <h2>Analytics</h2>
+    </div>
+
+    {% set total_revenue = bookings|selectattr("status","in",["Confirmed","Completed"])|sum(attribute="price") %}
+    {% set by_status = {} %}
+    <div class="row g-3 mb-5">
+      <div class="col-md-4" data-aos="fade-up">
+        <div class="surface-navy stat-card">
+          <div class="icon"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div class="stat-number" style="font-size:1.6rem;">₹{{ total_revenue }}</div>
+          <div class="text-gray small">Total Earnings</div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="surface-navy stat-card">
+          <div class="icon"><i class="fa-solid fa-ticket"></i></div>
+          <div class="stat-number" style="font-size:1.6rem;">{{ bookings|length }}</div>
+          <div class="text-gray small">Total Bookings</div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="surface-navy stat-card">
+          <div class="icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="stat-number" style="font-size:1.6rem;">
+            {{ (bookings|selectattr("status","equalto","Completed")|list|length) }}
+          </div>
+          <div class="text-gray small">Games Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass p-4" data-aos="fade-up">
+      <h6 class="mb-3">Bookings by status</h6>
+      {% for status in ["Pending","Confirmed","Completed","Cancelled","Expired"] %}
+      {% set count = bookings|selectattr("status","equalto",status)|list|length %}
+      {% set pct = ((count / bookings|length * 100) if bookings|length else 0) %}
+      <div class="mb-3">
+        <div class="d-flex justify-content-between small mb-1">
+          <span>{{ status }}</span><span class="text-gray">{{ count }}</span>
+        </div>
+        <div style="height:8px;border-radius:6px;background:rgba(255,255,255,0.06);overflow:hidden;">
+          <div style="height:100%;width:{{ pct }}%;background:linear-gradient(90deg,#10B981,#39FF88);"></div>
+        </div>
+      </div>
+      {% endfor %}
+      <p class="text-gray small mt-3 mb-0">Revenue analytics are live-computed based on active player booking statuses.</p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

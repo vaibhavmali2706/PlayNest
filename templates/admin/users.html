@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Users — Admin{% endblock %}
+{% block content %}
+<div class="pn-shell" style="padding-top:5rem;">
+  {% include "components/admin_sidebar.html" %}
+
+  <div class="pn-main">
+    <div class="mb-4" data-aos="fade-up">
+      <p class="eyebrow mb-1">People</p>
+      <h2>Users</h2>
+    </div>
+
+    {% if users %}
+    <div class="surface-navy p-0" style="overflow-x:auto;" data-aos="fade-up">
+      <table class="pn-table">
+        <thead><tr><th>Name</th><th>Email</th><th>City</th><th>Favourites</th><th>Joined</th></tr></thead>
+        <tbody>
+        {% for u in users %}
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.city or "—" }}</td>
+            <td>{{ u.favourite_turf_ids|length }}</td>
+            <td>{{ u.created_at.strftime("%d %b %Y") }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="glass p-5 text-center"><p class="text-gray mb-0">No users have signed up yet in this session.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
